@@ -12,34 +12,28 @@ Configuration () {
 	echo "######################################### CONFIGURATION VERIFICATION #########################################"
 	error=0
 
-    radarrmovielist=$(curl -s --header "X-Api-Key:"${RadarrAPIkey} --request GET  "$RadarrUrl/api/movie")
-    radarrmovietotal=$(echo "${radarrmovielist}"  | jq -r '.[].id' | wc -l)
-    radarrmovieids=($(echo "${radarrmovielist}" | jq -r ".[].id"))
+	radarrmovielist=$(curl -s --header "X-Api-Key:"${RadarrAPIkey} --request GET  "$RadarrUrl/api/movie")
+	radarrmovietotal=$(echo "${radarrmovielist}"  | jq -r '.[].id' | wc -l)
+	radarrmovieids=($(echo "${radarrmovielist}" | jq -r ".[].id"))
 
-    if [ -f "/config/cookies/cookies.txt" ]; then
-        cookies="--cookies /config/cookies/cookies.txt"
-    else
-        cookies=""
-    fi
-
-    echo "Verifying Radarr Movie Directory Access:"
-    for id in ${!radarrmovieids[@]}; do
-        currentprocessid=$(( $id + 1 ))
-        radarrid="${radarrmovieids[$id]}"
-        radarrmoviedata="$(echo "${radarrmovielist}" | jq -r ".[] | select(.id==$radarrid)")"
-        radarrmoviepath="$(echo "${radarrmoviedata}" | jq -r ".path")"
-        radarrmovierootpath="$(dirname "$radarrmoviepath")"
-        if [ -d "$radarrmovierootpath" ]; then
-            echo "Root Found: $radarrmovierootpath"
-            error=0
-            break
-        else
-            echo "ERROR: Root Not Found, please verify you have the right volume configured, expecting path:"
-            echo "ERROR: $radarrmovierootpath"
-            error=1
-            continue
-        fi
-    done
+	echo "Verifying Radarr Movie Directory Access:"
+	for id in ${!radarrmovieids[@]}; do
+		currentprocessid=$(( $id + 1 ))
+		radarrid="${radarrmovieids[$id]}"
+		radarrmoviedata="$(echo "${radarrmovielist}" | jq -r ".[] | select(.id==$radarrid)")"
+		radarrmoviepath="$(echo "${radarrmoviedata}" | jq -r ".path")"
+		radarrmovierootpath="$(dirname "$radarrmoviepath")"
+		if [ -d "$radarrmovierootpath" ]; then
+			echo "Root Found: $radarrmovierootpath"
+			error=0
+			break
+		else
+			echo "ERROR: Root Not Found, please verify you have the right volume configured, expecting path:"
+			echo "ERROR: $radarrmovierootpath"
+			error=1
+			continue
+		fi
+	done
 
     echo "Checking for cookies.txt"
     if [ -f "/config/cookies/cookies.txt" ]; then
@@ -113,7 +107,8 @@ DownloadTrailers () {
             continue
         fi
         if [ -z "$radarrtrailerid" ]; then
-            echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: No Trailer ID Found ($radarrmovietitle), Skipping..."
+            echo "$currentprocessid of $radarrmovietotal :: radarrmovietitle:: ERROR: No Trailer ID Found ($radarrmovietitle), Skipping..."
+	    echo "No Trailer Found :: $radarrmovietitle :: Radarr Missing Youtube Trailer ID"  >> "/config/logs/NotFound.log"
             continue
         fi
         echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle"
