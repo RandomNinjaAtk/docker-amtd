@@ -7,6 +7,9 @@
 ## Features
 * Downloading **Movie Trailers** using online sources for use in popular applications (Plex/Kodi/Emby/Jellyfin): 
   * Connects to Radarr to automatically download trailers for Movies in your existing library
+  * Downloads trailers using youtube-dl automatically
+  * Names trailers correctly to match Kodi/Plex naming convention
+  * Embeds relevant metadata into each trailer
 
 
 ## Supported Architectures
@@ -32,11 +35,12 @@ Container images are configured using parameters passed at runtime (such as thos
 | --- | --- |
 | `-e PUID=1000` | for UserID - see below for explanation |
 | `-e PGID=1000` | for GroupID - see below for explanation |
-| `-v /config` | Configuration files for Lidarr. |
+| `-v /config` | Configuration files for AMTD. |
+| `-v /change/me/to/match/radarr` | Configure this volume to match your Radarr Radarr's volume mappings associated with Radarr's Library Root Folder settings |
 | `-e AUTOSTART="true"` | true = Enabled :: Runs script automatically on startup |
-| `-e RadarrUrl="http://127.0.0.1:8686"` | Set domain or IP to your Lidarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s. |
+| `-e RadarrUrl="http://127.0.0.1:8686"` | Set domain or IP to your Radarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s. |
 | `-e RadarrAPIkey="08d108d108d108d108d108d108d108d1"` | Lidarr API key. |
-| `-e CountryCode=us` | Set the country code for preferred video matching, uses Musicbrainz Country Codes, lowercase only. |
+| `-e CountryCode=us` | Set the country code for preferred Radarr matching, uses Musicbrainz Country Codes, lowercase only. |
 | `-e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"` | For guidence, please see youtube-dl documentation |
 | `-e subtitlelanguage="en"` | Desired Language Code :: For guidence, please see youtube-dl documentation. |
 | `-e FilePermissions=666` | Based on chmod linux permissions |
