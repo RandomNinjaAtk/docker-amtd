@@ -1,5 +1,5 @@
 # AMTD - Automated Movie Trailer Downloader 
-[RandomNinjaAtk/amtd](https://github.com/RandomNinjaAtk/docker-amtd) is a Radarr Companion script to automatically download movie trailers for use in media applications
+[RandomNinjaAtk/amtd](https://github.com/RandomNinjaAtk/docker-amtd) is a Radarr companion script to automatically download movie trailers for use in other video applications (plex/kodi/jellyfin/emby) 
 
 [![RandomNinjaAtk/amtd](https://raw.githubusercontent.com/RandomNinjaAtk/unraid-templates/master/randomninjaatk/img/amtd.png)](https://github.com/RandomNinjaAtk/docker-amtd)
 
