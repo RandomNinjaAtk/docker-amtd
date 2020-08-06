@@ -107,8 +107,16 @@ DownloadTrailers () {
             continue
         fi
         if [ -z "$radarrtrailerid" ]; then
-            echo "$currentprocessid of $radarrmovietotal :: radarrmovietitle:: ERROR: No Trailer ID Found ($radarrmovietitle), Skipping..."
-	    echo "No Trailer Found :: $radarrmovietitle :: Radarr Missing Youtube Trailer ID"  >> "/config/logs/NotFound.log"
+		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: No Trailer ID Found ($radarrmovietitle), Skipping..."
+		if [ -f "/config/logs/NotFound.log" ]; then
+			if cat "/config/logs/NotFound.log" | grep -i ":: $radarrmovietitle ::" | read; then
+				sleep 0.1
+			else
+	    			echo "No Trailer Found :: $radarrmovietitle :: Radarr Missing Youtube Trailer ID"  >> "/config/logs/NotFound.log"
+			fi
+		else
+			echo "No Trailer Found :: $radarrmovietitle :: Radarr Missing Youtube Trailer ID"  >> "/config/logs/NotFound.log"
+		fi
             continue
         fi
         echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle"
