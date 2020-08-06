@@ -18,7 +18,7 @@ The architectures supported by this image are:
 
 | Architecture | Tag |
 | :----: | --- |
-| x86-64 | amd64-latest |
+| x86-64 | latest |
 
 ## Version Tags
 
