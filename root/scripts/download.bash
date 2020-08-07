@@ -200,6 +200,7 @@ DownloadTrailers () {
                 rm "$radarrmoviepath/$radarrmoviefolder-trailer.mp4"
             fi
             chmod $FilePermissions "$radarrmoviepath/$radarrmoviefolder-trailer.mkv"
+		chown abc:abc "$radarrmoviepath/$radarrmoviefolder-trailer.mkv"
             echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: Complete!"
         else
             echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: TRAILER DOWNLOAD :: ERROR :: Skipping..."
