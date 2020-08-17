@@ -43,15 +43,7 @@ Configuration () {
         echo "cookies.txt not found at the following location: /config/cookies/cookies.txt"
         cookies=""
     fi
-
-    # Country Code
-	if [ ! -z "$CountryCode" ]; then
-		echo "Radarr Trailer Country Code: $CountryCode"
-	else
-		echo "ERROR: CountryCode is empty, please configure wtih a valid Country Code (lowercase)"
-		error=1
-	fi
-
+	
 	# videoformat
 	if [ ! -z "$videoformat" ]; then
 		echo "Radarr Trailer Format Set To: $videoformat"
