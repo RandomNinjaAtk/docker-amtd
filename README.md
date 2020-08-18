@@ -13,7 +13,7 @@
 * Downloading **Movie Trailers** using online sources for use in popular applications (Plex/Kodi/Emby/Jellyfin): 
   * Connects to Radarr to automatically download trailers for Movies in your existing library
   * Downloads trailers using youtube-dl automatically
-  * Names trailers correctly to match Kodi/Plex naming convention
+  * Names trailers correctly to match Plex/Emby naming convention (Emby not tested)
   * Embeds relevant metadata into each trailer
   
 
