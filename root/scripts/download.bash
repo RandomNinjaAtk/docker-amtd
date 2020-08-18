@@ -37,33 +37,33 @@ Configuration () {
 		fi
 	done
 
-    echo "Checking for cookies.txt"
-    if [ -f "/config/cookies/cookies.txt" ]; then
-        echo "/config/cookies/cookies.txt found!"
-        cookies="--cookies /config/cookies/cookies.txt"
-    else
-        echo "cookies.txt not found at the following location: /config/cookies/cookies.txt"
-        cookies=""
-    fi
-	
+	echo "Checking for cookies.txt"
+	if [ -f "/config/cookies/cookies.txt" ]; then
+		echo "/config/cookies/cookies.txt found!"
+		cookies="--cookies /config/cookies/cookies.txt"
+	else
+		echo "cookies.txt not found at the following location: /config/cookies/cookies.txt"
+		cookies=""
+	fi
+
 	# videoformat
 	if [ ! -z "$videoformat" ]; then
 		echo "Radarr Trailer Format Set To: $videoformat"
 	else
 		echo "Radarr Trailer Format Set To: --format bestvideo[vcodec*=avc1]+bestaudio"
-        videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"
+		videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"
 	fi
-	
+
 	# extrastype
 	if [ ! -z "$extrastype" ]; then
 		echo "Radarr Extras Selection: $extrastype"
 	else
 		echo "WARNING: Radarr Extras Selection not specified"
 		echo "Radarr Extras Selection: all"
-        extrastype="all"
+		extrastype="all"
 	fi
 
-    # subtitlelanguage
+	# subtitlelanguage
 	if [ ! -z "$subtitlelanguage" ]; then
 		subtitlelanguage="${subtitlelanguage,,}"
 		echo "Radarr Trailer Subtitle Language: $subtitlelanguage"
@@ -72,44 +72,44 @@ Configuration () {
 		echo "Radarr Trailer Subtitle Language: $subtitlelanguage"
 	fi
 
-    if [ ! -z "$FilePermissions" ]; then
-        echo "Radarr Trailer File Permissions: $FilePermissions"
+	if [ ! -z "$FilePermissions" ]; then
+		echo "Radarr Trailer File Permissions: $FilePermissions"
 	else
 		echo "ERROR: FilePermissions not set, using default..."
 		FilePermissions="666"
 		echo "Radarr Trailer File Permissions: $FilePermissions"
 	fi
 
-    if [ $error == 1 ]; then
-        echo "ERROR :: Exiting..."
-        exit 1
-    fi
-    sleep 5
+	if [ $error == 1 ]; then
+		echo "ERROR :: Exiting..."
+		exit 1
+	fi
+	sleep 5
 }
 
 DownloadTrailers () {
-    echo "######################################### DOWNLOADING TRAILERS #########################################"
-    for id in ${!radarrmovieids[@]}; do
-        currentprocessid=$(( $id + 1 ))
-        radarrid="${radarrmovieids[$id]}"
-        radarrmoviedata="$(echo "${radarrmovielist}" | jq -r ".[] | select(.id==$radarrid)")"
-        radarrmoviecredit="$(curl -s --header "X-Api-Key:"${RadarrAPIkey} --request GET  "$RadarrUrl/api/v3/credit?movieId=$radarrid")"
-        radarrmoviedirector="$(echo "${radarrmoviecredit}" | jq -r ".[] | select(.job==\"Director\") | .personName"  | head -n 1)"
-        radarrmovietitle="$(echo "${radarrmoviedata}" | jq -r ".title")"
-        radarrmovieyear="$(echo "${radarrmoviedata}" | jq -r ".year")"
-        radarrmoviepath="$(echo "${radarrmoviedata}" | jq -r ".path")"
-        radarrmoviegenre="$(echo "${radarrmoviedata}" | jq -r ".genres | .[]" | head -n 1)"
-        radarrmoviefolder="$(basename "${radarrmoviepath}")"
-        radarrmoviecertification="$(echo "${radarrmoviedata}" | jq -r ".certification")"
-        radarrmovieoverview="$(echo "${radarrmoviedata}" | jq -r ".overview")"
-        radarrmovieostudio="$(echo "${radarrmoviedata}" | jq -r ".studio")"
+	echo "######################################### DOWNLOADING TRAILERS #########################################"
+	for id in ${!radarrmovieids[@]}; do
+		currentprocessid=$(( $id + 1 ))
+		radarrid="${radarrmovieids[$id]}"
+		radarrmoviedata="$(echo "${radarrmovielist}" | jq -r ".[] | select(.id==$radarrid)")"
+		radarrmoviecredit="$(curl -s --header "X-Api-Key:"${RadarrAPIkey} --request GET  "$RadarrUrl/api/v3/credit?movieId=$radarrid")"
+		radarrmoviedirector="$(echo "${radarrmoviecredit}" | jq -r ".[] | select(.job==\"Director\") | .personName"  | head -n 1)"
+		radarrmovietitle="$(echo "${radarrmoviedata}" | jq -r ".title")"
+		radarrmovieyear="$(echo "${radarrmoviedata}" | jq -r ".year")"
+		radarrmoviepath="$(echo "${radarrmoviedata}" | jq -r ".path")"
+		radarrmoviegenre="$(echo "${radarrmoviedata}" | jq -r ".genres | .[]" | head -n 1)"
+		radarrmoviefolder="$(basename "${radarrmoviepath}")"
+		radarrmoviecertification="$(echo "${radarrmoviedata}" | jq -r ".certification")"
+		radarrmovieoverview="$(echo "${radarrmoviedata}" | jq -r ".overview")"
+		radarrmovieostudio="$(echo "${radarrmoviedata}" | jq -r ".studio")"
 		themoviedbmovieid="$(echo "${radarrmoviedata}" | jq -r ".tmdbId")"
 		if [ ! -d "$radarrmoviepath" ]; then
-            echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: Movie Path does not exist ($radarrmovietitle), Skipping..."
-            continue
-        fi
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: Movie Path does not exist ($radarrmovietitle), Skipping..."
+			continue
+		fi
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle"
-		themoviedbvideoslistdata=$(curl -s "https://api.themoviedb.org/3/movie/${themoviedbmovieid}/videos?api_key=${themoviedbapikey}&language=$subtitlelanguage") 
+		themoviedbvideoslistdata=$(curl -s "https://api.themoviedb.org/3/movie/${themoviedbmovieid}/videos?api_key=${themoviedbapikey}&language=$subtitlelanguage")
 		if [ "$extrastype" == "all" ]; then
 			themoviedbvideoslistids=($(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$subtitlelanguage\") | .id"))
 		else
@@ -130,7 +130,7 @@ DownloadTrailers () {
 			continue
 		fi
 		find "$radarrmoviepath" -maxdepth 1 -type f -iname "*-trailer.mkv" -delete
-		
+
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $themoviedbvideoslistidscount Extras Found!"
 		for id in ${!themoviedbvideoslistids[@]}; do
 			currentsubprocessid=$(( $id + 1 ))
@@ -157,24 +157,24 @@ DownloadTrailers () {
 				folder="Trailers"
 			fi
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename"
-					       
+
 			if [ -f "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" ]; then
 				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Trailer already Downloaded..."
 				continue
 			fi
-			
+
 			if [ ! -d "$radarrmoviepath/$folder" ]; then
 				mkdir -p "$radarrmoviepath/$folder"
 				chmod $FilePermissions "$radarrmoviepath/$folder"
 				chown abc:abc "$radarrmoviepath/$folder"
 			fi
-			
-			
+
+
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: Sending Trailer link to youtube-dl..."
 			echo "=======================START YOUTUBE-DL========================="
 			python3 /usr/local/bin/youtube-dl ${cookies} -o "$radarrmoviepath/$folder/$sanatizethemoviedbvidename" ${videoformat} --write-sub --sub-lang $subtitlelanguage --embed-subs --merge-output-format mkv --no-mtime --geo-bypass "$youtubeurl"
 			echo "========================STOP YOUTUBE-DL========================="
-			if [ -f "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" ]; then   
+			if [ -f "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" ]; then
 				audiochannels="$(ffprobe -v quiet -print_format json -show_streams "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" | jq -r ".[] | .[] | select(.codec_type==\"audio\") | .channels")"
 				width="$(ffprobe -v quiet -print_format json -show_streams "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" | jq -r ".[] | .[] | select(.codec_type==\"video\") | .width")"
 				height="$(ffprobe -v quiet -print_format json -show_streams "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" | jq -r ".[] | .[] | select(.codec_type==\"video\") | .height")"
@@ -232,16 +232,16 @@ DownloadTrailers () {
 					-attach "$radarrmoviepath/$folder/cover.jpg" -metadata:s:t mimetype=image/jpeg \
 					"$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
 				echo "========================STOP FFMPEG========================="
-				if [ -f "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" ]; then   
+				if [ -f "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" ]; then
 					echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: TRAILER :: Metadata Embedding Complete!"
-					if [ -f "$radarrmoviepath/$folder/temp.mkv" ]; then   
+					if [ -f "$radarrmoviepath/$folder/temp.mkv" ]; then
 						rm "$radarrmoviepath/$folder/temp.mkv"
 					fi
 				else
 					echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: TRAILER :: ERROR: Metadata Embedding Failed!"
 					mv "$radarrmoviepath/$folder/temp.mkv" "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
 				fi
-				if [ -f "$radarrmoviepath/$folder/cover.jpg" ]; then 
+				if [ -f "$radarrmoviepath/$folder/cover.jpg" ]; then
 					rm "$radarrmoviepath/$folder/cover.jpg"
 				fi
 				chmod $FilePermissions "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
@@ -251,11 +251,13 @@ DownloadTrailers () {
 				echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: TRAILER DOWNLOAD :: ERROR :: Skipping..."
 			fi
 		done
-    done
-    trailercount="$(find "$radarrmovierootpath" -type f -iname "*-trailer.mkv" | wc -l)"
-    echo "################################# $trailercount TRAILERS DOWNLOADED ####################################"
-    echo "########################################### SCRIPT COMPLETE ############################################"
-    
+		trailercount="$(find "$radarrmoviepath" -mindepth 2 -type f -iname "*.mkv" | wc -l)"
+		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $trailercount Extras Downloaded!"
+	done
+	trailercount="$(find "$radarrmovierootpath" -mindepth 3 -type f -iname "*.mkv" | wc -l)"
+	echo "################################# $trailercount TRAILERS DOWNLOADED ####################################"
+	echo "########################################### SCRIPT COMPLETE ############################################"
+
 }
 
 Configuration
