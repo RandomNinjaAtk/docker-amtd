@@ -9,7 +9,7 @@ Configuration () {
 	echo ""
 	echo ""
 	sleep 5
-	echo "############################################ SCRIPT VERSION 1.0.1"
+	echo "############################################ SCRIPT VERSION 1.0.2"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -125,6 +125,10 @@ DownloadTrailers () {
 		themoviedbmovieid="$(echo "${radarrmoviedata}" | jq -r ".tmdbId")"
 		if [ ! -d "$radarrmoviepath" ]; then
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: Movie Path does not exist ($radarrmovietitle), Skipping..."
+			continue
+		fi
+		if [ -f "/config/cache/${themoviedbmovieid}-complete" ]; then
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: All videos already downloaded, skipping..."
 			continue
 		fi
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle"
@@ -272,6 +276,7 @@ DownloadTrailers () {
 		done
 		trailercount="$(find "$radarrmoviepath" -mindepth 2 -type f -iname "*.mkv" | wc -l)"
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $trailercount Extras Downloaded!"
+		touch "/config/cache/${themoviedbmovieid}-complete"
 	done
 	trailercount="$(find "$radarrmovierootpath" -mindepth 3 -type f -iname "*.mkv" | wc -l)"
 	echo "############################################ $trailercount TRAILERS DOWNLOADED"
