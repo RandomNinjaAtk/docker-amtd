@@ -9,7 +9,7 @@ Configuration () {
 	echo ""
 	echo ""
 	sleep 5
-	echo "############################################ SCRIPT VERSION 1.0.2"
+	echo "############################################ SCRIPT VERSION 1.0.3"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -123,12 +123,12 @@ DownloadTrailers () {
 		radarrmovieoverview="$(echo "${radarrmoviedata}" | jq -r ".overview")"
 		radarrmovieostudio="$(echo "${radarrmoviedata}" | jq -r ".studio")"
 		themoviedbmovieid="$(echo "${radarrmoviedata}" | jq -r ".tmdbId")"
-		if [ ! -d "$radarrmoviepath" ]; then
-			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: Movie Path does not exist ($radarrmovietitle), Skipping..."
-			continue
-		fi
 		if [ -f "/config/cache/${themoviedbmovieid}-complete" ]; then
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: All videos already downloaded, skipping..."
+			continue
+		fi
+		if [ ! -d "$radarrmoviepath" ]; then
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: Movie Path does not exist ($radarrmovietitle), Skipping..."
 			continue
 		fi
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle"
