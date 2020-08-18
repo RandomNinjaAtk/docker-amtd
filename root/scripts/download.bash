@@ -109,7 +109,7 @@ DownloadTrailers () {
             continue
         fi
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle"
-		themoviedbvideoslistdata=$(curl -s "https://api.themoviedb.org/3/movie/${themoviedbmovieid}/videos?api_key=${themoviedbapikey}") 
+		themoviedbvideoslistdata=$(curl -s "https://api.themoviedb.org/3/movie/${themoviedbmovieid}/videos?api_key=${themoviedbapikey}&language=$subtitlelanguage") 
 		if [ "$extrastype" == "all" ]; then
 			themoviedbvideoslistids=($(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$subtitlelanguage\") | .id"))
 		else
