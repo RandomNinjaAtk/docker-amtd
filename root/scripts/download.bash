@@ -9,7 +9,7 @@ Configuration () {
 	echo ""
 	echo ""
 	sleep 5
-	echo "############################################ SCRIPT VERSION 1.0.3"
+	echo "############################################ SCRIPT VERSION 1.0.4"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -112,9 +112,12 @@ DownloadTrailers () {
 		currentprocessid=$(( $id + 1 ))
 		radarrid="${radarrmovieids[$id]}"
 		radarrmoviedata="$(echo "${radarrmovielist}" | jq -r ".[] | select(.id==$radarrid)")"
-		radarrmoviecredit="$(curl -s --header "X-Api-Key:"${RadarrAPIkey} --request GET  "$RadarrUrl/api/v3/credit?movieId=$radarrid")"
-		radarrmoviedirector="$(echo "${radarrmoviecredit}" | jq -r ".[] | select(.job==\"Director\") | .personName"  | head -n 1)"
 		radarrmovietitle="$(echo "${radarrmoviedata}" | jq -r ".title")"
+		themoviedbmovieid="$(echo "${radarrmoviedata}" | jq -r ".tmdbId")"
+		if [ -f "/config/cache/${themoviedbmovieid}-complete" ]; then
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: All videos already downloaded, skipping..."
+			continue
+		fi
 		radarrmovieyear="$(echo "${radarrmoviedata}" | jq -r ".year")"
 		radarrmoviepath="$(echo "${radarrmoviedata}" | jq -r ".path")"
 		radarrmoviegenre="$(echo "${radarrmoviedata}" | jq -r ".genres | .[]" | head -n 1)"
@@ -122,11 +125,6 @@ DownloadTrailers () {
 		radarrmoviecertification="$(echo "${radarrmoviedata}" | jq -r ".certification")"
 		radarrmovieoverview="$(echo "${radarrmoviedata}" | jq -r ".overview")"
 		radarrmovieostudio="$(echo "${radarrmoviedata}" | jq -r ".studio")"
-		themoviedbmovieid="$(echo "${radarrmoviedata}" | jq -r ".tmdbId")"
-		if [ -f "/config/cache/${themoviedbmovieid}-complete" ]; then
-			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: All videos already downloaded, skipping..."
-			continue
-		fi
 		if [ ! -d "$radarrmoviepath" ]; then
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: Movie Path does not exist ($radarrmovietitle), Skipping..."
 			continue
