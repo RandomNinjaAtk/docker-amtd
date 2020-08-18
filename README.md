@@ -13,8 +13,12 @@
 * Downloading **Movie Trailers** using online sources for use in popular applications (Plex/Kodi/Emby/Jellyfin): 
   * Connects to Radarr to automatically download trailers for Movies in your existing library
   * Downloads trailers using youtube-dl automatically
-  * Names trailers correctly to match Kodi/Plex naming convention
+  * Names trailers correctly to match Plex/Emby naming convention (Emby not tested)
   * Embeds relevant metadata into each trailer
+  
+
+### Plex Example
+![](https://raw.githubusercontent.com/RandomNinjaAtk/docker-amtd/themoviedb/.github/amvtd-plex-example.jpg)
 
 
 ## Supported Architectures
@@ -42,12 +46,61 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e PGID=1000` | for GroupID - see below for explanation |
 | `-v /config` | Configuration files for AMTD. |
 | `-v /change/me/to/match/radarr` | Configure this volume to match your Radarr Radarr's volume mappings associated with Radarr's Library Root Folder settings |
-| `-e AUTOSTART="true"` | true = Enabled :: Runs script automatically on startup |
-| `-e RadarrUrl="http://127.0.0.1:8686"` | Set domain or IP to your Radarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s. |
-| `-e RadarrAPIkey="08d108d108d108d108d108d108d108d1"` | Radarr API key. |
+| `-e AUTOSTART=true` | true = Enabled :: Runs script automatically on startup |
+| `-e RadarrUrl=http://127.0.0.1:7878` | Set domain or IP to your Radarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s. |
+| `-e RadarrAPIkey=08d108d108d108d108d108d108d108d1` | Radarr API key. |
+| `-e extrastype=all` | all or trailers :: all downloads all available videos (trailers, clips, featurette, etc...) :: trailers only downloads trailers |
 | `-e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"` | For guidence, please see youtube-dl documentation |
-| `-e subtitlelanguage="en"` | Desired Language Code :: For guidence, please see youtube-dl documentation. |
+| `-e subtitlelanguage=en` | Desired Language Code :: For guidence, please see youtube-dl documentation. |
 | `-e FilePermissions=666` | Based on chmod linux permissions |
+
+### docker
+
+```
+docker create \
+  --name=amtd \
+  -v /path/to/config/files:/config \
+  -v /change/me/to/match/radarr:/change/me/to/match/radarr \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e AUTOSTART=true \
+  -e extrastype=all \
+  -e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio" \
+  -e subtitlelanguage=en \
+  -e FilePermissions=666 \
+  -e RadarrUrl=http://127.0.0.1:7878 \
+  -e RadarrAPIkey=RADARRAPIKEY \
+  --restart unless-stopped \
+  randomninjaatk/amtd 
+```
+
+
+### docker-compose
+
+Compatible with docker-compose v2 schemas.
+
+```
+---
+version: "2.1"
+services:
+  amd:
+    image: randomninjaatk/amtd 
+    container_name: amtd
+    volumes:
+      - /path/to/config/files:/config
+      - /change/me/to/match/radarr:/change/me/to/match/radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - AUTOSTART=true
+      - extrastype=all
+      - videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"
+      - subtitlelanguage=en
+      - FilePermissions=666
+      - RadarrUrl=http://127.0.0.1:7878
+      - RadarrAPIkey=RADARRAPIKEY
+    restart: unless-stopped
+```
 
 # Script Information
 * Script will automatically run when enabled, if disabled, you will need to manually execute with the following command:
