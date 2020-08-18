@@ -1,5 +1,4 @@
 #!/usr/bin/with-contenv bash
-themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
 
 Configuration () {
 	processstartid="$(ps -A -o pid,cmd|grep "start.bash" | grep -v grep | head -n 1 | awk '{print $1}')"
@@ -13,6 +12,7 @@ Configuration () {
 	echo "############################################ SCRIPT VERSION 1.0.0"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
+	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
 	error=0
 
 	#Verify Radarr Connectivity
