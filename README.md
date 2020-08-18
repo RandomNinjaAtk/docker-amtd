@@ -121,11 +121,11 @@ services:
 <br />
 <br />
 <br />
-<br />
   
  
 # Credits
 - [ffmpeg](https://ffmpeg.org/)
 - [youtube-dl](https://ytdl-org.github.io/youtube-dl/index.html)
 - [Radarr](https://radarr.video/)
+- [The Movie Database](https://www.themoviedb.org/)
 - Icons made by <a href="http://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
