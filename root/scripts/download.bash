@@ -10,15 +10,33 @@ Configuration () {
 	echo ""
 	echo ""
 	sleep 5
-
-	echo "######################################### CONFIGURATION VERIFICATION #########################################"
+	echo "############################################ SCRIPT VERSION 1.0.0"
+	echo "############################################ DOCKER VERSION $VERSION"
+	echo "############################################ CONFIGURATION VERIFICATION"
 	error=0
+
+	#Verify Radarr Connectivity
+	radarrtest=$(curl -s "$RadarrUrl/api/v3/system/status?apikey=${RadarrAPIkey}" | jq -r ".version")
+	if [ ! -z "$radarrtest" ]; then
+		if [ "$radarrtest" != "null" ]; then
+			echo "Radarr: Connection Valid, version: $radarrtest"
+		else
+			echo "ERROR: Cannot communicate with Radarr, most likely a...."
+			echo "ERROR: Invalid API Key: $RadarrAPIkey"
+			error=1
+		fi
+	else
+		echo "ERROR: Cannot communicate with Radarr, no response"
+		echo "ERROR: URL: $RadarrUrl"
+		echo "ERROR: API Key: $RadarrAPIkey"
+		error=1
+	fi
 
 	radarrmovielist=$(curl -s --header "X-Api-Key:"${RadarrAPIkey} --request GET  "$RadarrUrl/api/movie")
 	radarrmovietotal=$(echo "${radarrmovielist}"  | jq -r '.[].id' | wc -l)
 	radarrmovieids=($(echo "${radarrmovielist}" | jq -r ".[].id"))
-
-	echo "Verifying Radarr Movie Directory Access:"
+	
+	echo "Radarr: Verifying Movie Directory Access:"
 	for id in ${!radarrmovieids[@]}; do
 		currentprocessid=$(( $id + 1 ))
 		radarrid="${radarrmovieids[$id]}"
@@ -26,23 +44,24 @@ Configuration () {
 		radarrmoviepath="$(echo "${radarrmoviedata}" | jq -r ".path")"
 		radarrmovierootpath="$(dirname "$radarrmoviepath")"
 		if [ -d "$radarrmovierootpath" ]; then
-			echo "Root Found: $radarrmovierootpath"
+			echo "Radarr: Root Media Folder Found: $radarrmovierootpath"
 			error=0
 			break
 		else
-			echo "ERROR: Root Not Found, please verify you have the right volume configured, expecting path:"
-			echo "ERROR: $radarrmovierootpath"
+			echo "ERROR: Radarr Root Media Folder not found, please verify you have the right volume configured, expecting path:"
+			echo "ERROR: Expected volume path: $radarrmovierootpath"
 			error=1
-			continue
+			break
 		fi
 	done
 
-	echo "Checking for cookies.txt"
+	echo "youtube-dl: Checking for cookies.txt"
 	if [ -f "/config/cookies/cookies.txt" ]; then
-		echo "/config/cookies/cookies.txt found!"
+		echo "youtube-dl: /config/cookies/cookies.txt found!"
 		cookies="--cookies /config/cookies/cookies.txt"
 	else
-		echo "cookies.txt not found at the following location: /config/cookies/cookies.txt"
+		echo "WARNING: youtube-dl cookies.txt not found at the following location: /config/cookies/cookies.txt"
+		echo "WARNING: not having cookies may result in failed downloads..."
 		cookies=""
 	fi
 
@@ -88,7 +107,7 @@ Configuration () {
 }
 
 DownloadTrailers () {
-	echo "######################################### DOWNLOADING TRAILERS #########################################"
+	echo "############################################ DOWNLOADING TRAILERS"
 	for id in ${!radarrmovieids[@]}; do
 		currentprocessid=$(( $id + 1 ))
 		radarrid="${radarrmovieids[$id]}"
@@ -170,7 +189,7 @@ DownloadTrailers () {
 			fi
 
 
-			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: Sending Trailer link to youtube-dl..."
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Sending Trailer link to youtube-dl..."
 			echo "=======================START YOUTUBE-DL========================="
 			python3 /usr/local/bin/youtube-dl ${cookies} -o "$radarrmoviepath/$folder/$sanatizethemoviedbvidename" ${videoformat} --write-sub --sub-lang $subtitlelanguage --embed-subs --merge-output-format mkv --no-mtime --geo-bypass "$youtubeurl"
 			echo "========================STOP YOUTUBE-DL========================="
@@ -201,8 +220,8 @@ DownloadTrailers () {
 					audiodescription="Mono"
 				fi
 
-				echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: TRAILER DOWNLOAD :: Complete!"
-				echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: TRAILER :: Extracting thumbnail with ffmpeg..."
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER DOWNLOAD :: Complete!"
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: Extracting thumbnail with ffmpeg..."
 				echo "========================START FFMPEG========================"
 				ffmpeg -y \
 					-ss 10 \
@@ -211,11 +230,11 @@ DownloadTrailers () {
 					-vf "scale=640:-2" \
 					"$radarrmoviepath/$folder/cover.jpg"
 				echo "========================STOP FFMPEG========================="
-				echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: Updating File Statistics via mkvtoolnix (mkvpropedit)..."
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Updating File Statistics via mkvtoolnix (mkvpropedit)..."
 				echo "========================START MKVPROPEDIT========================"
 				mkvpropedit "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" --add-track-statistics-tags
 				echo "========================STOP MKVPROPEDIT========================="
-				echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: TRAILER :: Embedding metadata with ffmpeg..."
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: Embedding metadata with ffmpeg..."
 				echo "========================START FFMPEG========================"
 				mv "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" "$radarrmoviepath/$folder/temp.mkv"
 				ffmpeg -y \
@@ -233,12 +252,12 @@ DownloadTrailers () {
 					"$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
 				echo "========================STOP FFMPEG========================="
 				if [ -f "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" ]; then
-					echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: TRAILER :: Metadata Embedding Complete!"
+					echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: Metadata Embedding Complete!"
 					if [ -f "$radarrmoviepath/$folder/temp.mkv" ]; then
 						rm "$radarrmoviepath/$folder/temp.mkv"
 					fi
 				else
-					echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: TRAILER :: ERROR: Metadata Embedding Failed!"
+					echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: ERROR: Metadata Embedding Failed!"
 					mv "$radarrmoviepath/$folder/temp.mkv" "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
 				fi
 				if [ -f "$radarrmoviepath/$folder/cover.jpg" ]; then
@@ -246,17 +265,17 @@ DownloadTrailers () {
 				fi
 				chmod $FilePermissions "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
 				chown abc:abc "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
-				echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: Complete!"
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Complete!"
 			else
-				echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: TRAILER DOWNLOAD :: ERROR :: Skipping..."
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER DOWNLOAD :: ERROR :: Skipping..."
 			fi
 		done
 		trailercount="$(find "$radarrmoviepath" -mindepth 2 -type f -iname "*.mkv" | wc -l)"
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $trailercount Extras Downloaded!"
 	done
 	trailercount="$(find "$radarrmovierootpath" -mindepth 3 -type f -iname "*.mkv" | wc -l)"
-	echo "################################# $trailercount TRAILERS DOWNLOADED ####################################"
-	echo "########################################### SCRIPT COMPLETE ############################################"
+	echo "############################################ $trailercount TRAILERS DOWNLOADED"
+	echo "############################################ SCRIPT COMPLETE"
 
 }
 
