@@ -46,9 +46,9 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e PGID=1000` | for GroupID - see below for explanation |
 | `-v /config` | Configuration files for AMTD. |
 | `-v /change/me/to/match/radarr` | Configure this volume to match your Radarr Radarr's volume mappings associated with Radarr's Library Root Folder settings |
-| `-e AUTOSTART="true"` | true = Enabled :: Runs script automatically on startup |
-| `-e RadarrUrl="http://127.0.0.1:7878"` | Set domain or IP to your Radarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s. |
-| `-e RadarrAPIkey="08d108d108d108d108d108d108d108d1"` | Radarr API key. |
+| `-e AUTOSTART=true` | true = Enabled :: Runs script automatically on startup |
+| `-e RadarrUrl=http://127.0.0.1:7878` | Set domain or IP to your Radarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s. |
+| `-e RadarrAPIkey=08d108d108d108d108d108d108d108d1` | Radarr API key. |
 | `-e extrastype=all` | all or trailers :: all downloads all available videos (trailers, clips, featurette, etc...) :: trailers only downloads trailers |
 | `-e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"` | For guidence, please see youtube-dl documentation |
 | `-e subtitlelanguage=en` | Desired Language Code :: For guidence, please see youtube-dl documentation. |
