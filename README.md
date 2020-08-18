@@ -4,17 +4,17 @@
 ![Docker Stars](https://img.shields.io/docker/stars/randomninjaatk/amtd?style=flat-square)
 [![Docker Hub](https://img.shields.io/badge/Open%20On-DockerHub-blue)](https://hub.docker.com/r/randomninjaatk/amtd)
 
-[RandomNinjaAtk/amtd](https://github.com/RandomNinjaAtk/docker-amtd) is a Radarr companion script to automatically download movie trailers for use in other video applications (plex/kodi/jellyfin/emby) 
+[RandomNinjaAtk/amtd](https://github.com/RandomNinjaAtk/docker-amtd) is a Radarr companion script to automatically download movie trailers and extras for use in other video applications (plex/kodi/jellyfin/emby) 
 
 [![RandomNinjaAtk/amtd](https://raw.githubusercontent.com/RandomNinjaAtk/unraid-templates/master/randomninjaatk/img/amtd.png)](https://github.com/RandomNinjaAtk/docker-amtd)
 
 
 ## Features
-* Downloading **Movie Trailers** using online sources for use in popular applications (Plex/Kodi/Emby/Jellyfin): 
+* Downloading **Movie Trailers** and **Extras** using online sources for use in popular applications (Plex/Kodi/Emby/Jellyfin): 
   * Connects to Radarr to automatically download trailers for Movies in your existing library
-  * Downloads trailers using youtube-dl automatically
-  * Names trailers correctly to match Plex/Emby naming convention (Emby not tested)
-  * Embeds relevant metadata into each trailer
+  * Downloads videos using youtube-dl automatically
+  * Names videos correctly to match Plex/Emby naming convention (Emby not tested)
+  * Embeds relevant metadata into each video
   
 
 ### Plex Example
