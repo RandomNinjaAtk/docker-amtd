@@ -15,6 +15,10 @@
   * Downloads trailers using youtube-dl automatically
   * Names trailers correctly to match Kodi/Plex naming convention
   * Embeds relevant metadata into each trailer
+  
+
+### Plex Example
+![](https://raw.githubusercontent.com/RandomNinjaAtk/docker-amtd/themoviedb/.github/amvtd-plex-example.jpg)
 
 
 ## Supported Architectures
