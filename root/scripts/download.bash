@@ -9,7 +9,7 @@ Configuration () {
 	echo ""
 	echo ""
 	sleep 5
-	echo "############################################ SCRIPT VERSION 1.0.0"
+	echo "############################################ SCRIPT VERSION 1.0.1"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -78,8 +78,8 @@ Configuration () {
 		echo "Radarr Extras Selection: $extrastype"
 	else
 		echo "WARNING: Radarr Extras Selection not specified"
-		echo "Radarr Extras Selection: all"
-		extrastype="all"
+		echo "Radarr Extras Selection: trailers"
+		extrastype="trailers"
 	fi
 
 	# subtitlelanguage
