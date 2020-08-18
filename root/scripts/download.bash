@@ -205,8 +205,10 @@ DownloadTrailers () {
 				echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: TRAILER :: Extracting thumbnail with ffmpeg..."
 				echo "========================START FFMPEG========================"
 				ffmpeg -y \
+					-ss 10 \
 					-i "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" \
-					-vframes 1 -an -s 640x360 -ss 15 \
+					-frames:v 1 \
+					-vf "scale=640:-2" \
 					"$radarrmoviepath/$folder/cover.jpg"
 				echo "========================STOP FFMPEG========================="
 				echo "$currentprocessid of $radarrmovietotal :: Processing :: $radarrmovietitle :: Updating File Statistics via mkvtoolnix (mkvpropedit)..."
