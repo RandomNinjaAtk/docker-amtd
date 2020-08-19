@@ -9,7 +9,7 @@ Configuration () {
 	echo ""
 	echo ""
 	sleep 5
-	echo "############################################ SCRIPT VERSION 1.0.4"
+	echo "############################################ SCRIPT VERSION 1.0.5"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -134,7 +134,7 @@ DownloadTrailers () {
 		if [ "$extrastype" == "all" ]; then
 			themoviedbvideoslistids=($(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$subtitlelanguage\") | .id"))
 		else
-			themoviedbvideoslistids=($(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$subtitlelanguage\" and .type==\"Trailers\") | .id"))
+			themoviedbvideoslistids=($(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$subtitlelanguage\" and .type==\"Trailer\") | .id"))
 		fi
 		themoviedbvideoslistidscount=$(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$subtitlelanguage\") | .id" | wc -l)
 		if [ -z "$themoviedbvideoslistids" ]; then
