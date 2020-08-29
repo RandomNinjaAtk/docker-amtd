@@ -48,12 +48,13 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-v /config` | Configuration files for AMTD. |
 | `-v /change/me/to/match/radarr` | Configure this volume to match your Radarr Radarr's volume mappings associated with Radarr's Library Root Folder settings |
 | `-e AUTOSTART=true` | true = Enabled :: Runs script automatically on startup |
-| `-e RadarrUrl=http://127.0.0.1:7878` | Set domain or IP to your Radarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s. |
+| `-e RadarrUrl=http://x.x.x.x:7878` | Set domain or IP to your Radarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s. |
 | `-e RadarrAPIkey=08d108d108d108d108d108d108d108d1` | Radarr API key. |
 | `-e extrastype=all` | all or trailers :: all downloads all available videos (trailers, clips, featurette, etc...) :: trailers only downloads trailers |
 | `-e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"` | For guidence, please see youtube-dl documentation |
 | `-e subtitlelanguage=en` | Desired Language Code :: For guidence, please see youtube-dl documentation. |
 | `-e FilePermissions=666` | Based on chmod linux permissions |
+| `-e FolderPermissions=766` | Based on chmod linux permissions |
 
 ### docker
 
@@ -69,7 +70,8 @@ docker create \
   -e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio" \
   -e subtitlelanguage=en \
   -e FilePermissions=666 \
-  -e RadarrUrl=http://127.0.0.1:7878 \
+  -e FolderPermissions=766 \
+  -e RadarrUrl=http://x.x.x.x:7878 \
   -e RadarrAPIkey=RADARRAPIKEY \
   --restart unless-stopped \
   randomninjaatk/amtd 
@@ -98,7 +100,8 @@ services:
       - videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"
       - subtitlelanguage=en
       - FilePermissions=666
-      - RadarrUrl=http://127.0.0.1:7878
+      - FolderPermissions=766
+      - RadarrUrl=http://x.x.x.x:7878
       - RadarrAPIkey=RADARRAPIKEY
     restart: unless-stopped
 ```
