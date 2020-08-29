@@ -8,8 +8,9 @@ Configuration () {
 	echo "kill -9 $processdownloadid"
 	echo ""
 	echo ""
-	sleep 5
-	echo "############################################ SCRIPT VERSION 1.0.5"
+	sleep 2
+	echo "############################################ $TITLE"
+	echo "############################################ SCRIPT VERSION 1.0.6"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -97,6 +98,14 @@ Configuration () {
 		echo "ERROR: FilePermissions not set, using default..."
 		FilePermissions="666"
 		echo "Radarr Trailer File Permissions: $FilePermissions"
+	fi
+	
+	if [ ! -z "$FolderPermissions" ]; then
+		echo "Radarr Trailer Foldder Permissions: $FolderPermissions"
+	else
+		echo "WARNING: FolderPermissions not set, using default..."
+		FolderPermissions="766"
+		echo "Radarr Trailer Foldder Permissions: $FolderPermissions"
 	fi
 
 	if [ $error == 1 ]; then
@@ -186,7 +195,7 @@ DownloadTrailers () {
 
 			if [ ! -d "$radarrmoviepath/$folder" ]; then
 				mkdir -p "$radarrmoviepath/$folder"
-				chmod $FilePermissions "$radarrmoviepath/$folder"
+				chmod $FolderPermissions "$radarrmoviepath/$folder"
 				chown abc:abc "$radarrmoviepath/$folder"
 			fi
 
