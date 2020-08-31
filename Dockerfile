@@ -2,8 +2,7 @@ FROM lsiobase/ubuntu:focal
 LABEL maintainer="RandomNinjaAtk"
 
 ENV TITLE="Automated Movie Trailer Downloader (AMTD)"
-ENV VERSION="1.0.2"
-ENV MBRAINZMIRROR="https://musicbrainz.org"
+ENV VERSION="1.0.3"
 
 RUN \
 	echo "************ install dependencies ************" && \
