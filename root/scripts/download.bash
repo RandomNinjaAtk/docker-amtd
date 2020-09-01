@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.1.2"
+	echo "############################################ SCRIPT VERSION 1.1.3"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -154,17 +154,15 @@ DownloadTrailers () {
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: All videos already downloaded, skipping..."
 			continue
 		fi
-		radarrmovieyear="$(echo "${radarrmoviedata}" | jq -r ".year")"
 		radarrmoviepath="$(echo "${radarrmoviedata}" | jq -r ".path")"
-		radarrmoviegenre="$(echo "${radarrmoviedata}" | jq -r ".genres | .[]" | head -n 1)"
-		radarrmoviefolder="$(basename "${radarrmoviepath}")"
-		radarrmoviecertification="$(echo "${radarrmoviedata}" | jq -r ".certification")"
-		radarrmovieoverview="$(echo "${radarrmoviedata}" | jq -r ".overview")"
-		radarrmovieostudio="$(echo "${radarrmoviedata}" | jq -r ".studio")"
 		if [ ! -d "$radarrmoviepath" ]; then
-			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: Movie Path does not exist ($radarrmovietitle), Skipping..."
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: Movie Path does not exist, Skipping..."
 			continue
 		fi
+		radarrmovieyear="$(echo "${radarrmoviedata}" | jq -r ".year")"
+		radarrmoviegenre="$(echo "${radarrmoviedata}" | jq -r ".genres | .[]" | head -n 1)"
+		radarrmoviefolder="$(basename "${radarrmoviepath}")"
+		radarrmovieostudio="$(echo "${radarrmoviedata}" | jq -r ".studio")"		
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle"
 		themoviedbvideoslistdata=$(curl -s "https://api.themoviedb.org/3/movie/${themoviedbmovieid}/videos?api_key=${themoviedbapikey}&language=$subtitlelanguage")
 		if [ "$extrastype" == "all" ]; then
