@@ -17,7 +17,7 @@ for (( ; ; )); do
 	if [ -f "/config/logs/log-cleanup" ]; then
 		rm "/config/logs/log-cleanup"
 	fi
-	if [ -z "SCRIPTINTERVAL" ]; then
+	if [ -z "$SCRIPTINTERVAL" ]; then
 		SCRIPTINTERVAL="15m"
 	fi
 	sleep $SCRIPTINTERVAL
