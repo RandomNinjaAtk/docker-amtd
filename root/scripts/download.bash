@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.1.0"
+	echo "############################################ SCRIPT VERSION 1.1.1"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -240,8 +240,12 @@ DownloadTrailers () {
 				fi
 				outputfile="$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
 			else
-				if [ -d "$radarrmoviepath/${folder}s" ]; then
-					rm -rf "$radarrmoviepath/${folder}s"
+				if [[ -d "$radarrmoviepath/${folder}s" || -d "$radarrmoviepath/${folder}" ]]; then
+					if [ "$themoviedbvidetype" == "Behind the Scenes" ]; then
+						rm -rf "$radarrmoviepath/${folder}"
+					else
+						rm -rf "$radarrmoviepath/${folder}s"
+					fi
 				fi
 				folder="$(echo "${folder,,}" | sed 's/ *//g')"
 				if [ "$SINGLETRAILER" == "true" ]; then
@@ -370,7 +374,7 @@ DownloadTrailers () {
 		if [ "$USEFOLDERS" == "true" ]; then
 			trailercount="$(find "$radarrmoviepath" -mindepth 2 -type f -iname "*.mkv" | wc -l)"
 		else
-			trailercount="$(find "$radarrmoviepath" -mindepth 1 -type f -regex '.*\(-trailer.mkv\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\)' | wc -l)"
+			trailercount="$(find "$radarrmoviepath" -mindepth 1 -type f -regex '.*\(-trailer.mkv\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\|-behindthescenes.mkv\)' | wc -l)"
 		fi
 		
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $trailercount Extras Downloaded!"
@@ -379,7 +383,7 @@ DownloadTrailers () {
 	if [ "$USEFOLDERS" == "true" ]; then
 		trailercount="$(find "$radarrmovierootpath" -mindepth 3 -type f -iname "*.mkv" | wc -l)"
 	else
-		trailercount="$(find "$radarrmovierootpath" -mindepth 2 -type f -regex '.*\(-trailer.mkv\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\)' | wc -l)"
+		trailercount="$(find "$radarrmovierootpath" -mindepth 2 -type f -regex '.*\(-trailer.mkv\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\|-behindthescenes.mkv\)' | wc -l)"
 	fi
 	echo "############################################ $trailercount TRAILERS DOWNLOADED"
 	echo "############################################ SCRIPT COMPLETE"
