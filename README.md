@@ -48,6 +48,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-v /config` | Configuration files for AMTD. |
 | `-v /change/me/to/match/radarr` | Configure this volume to match your Radarr Radarr's volume mappings associated with Radarr's Library Root Folder settings |
 | `-e AUTOSTART=true` | true = Enabled :: Runs script automatically on startup |
+| `-e SCRIPTINTERVAL=1h` | #s or #m or #h or #d :: s = seconds, m = minutes, h = hours, d = days :: Amount of time between each script run, when AUTOSTART is enabled|
 | `-e RadarrUrl=http://x.x.x.x:7878` | Set domain or IP to your Radarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s. |
 | `-e RadarrAPIkey=08d108d108d108d108d108d108d108d1` | Radarr API key. |
 | `-e extrastype=all` | all or trailers :: all downloads all available videos (trailers, clips, featurette, etc...) :: trailers only downloads trailers |
@@ -68,6 +69,7 @@ docker create \
   -e PUID=1000 \
   -e PGID=1000 \
   -e AUTOSTART=true \
+  -e SCRIPTINTERVAL=1h \
   -e extrastype=all \
   -e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio" \
   -e subtitlelanguage=en \
@@ -99,6 +101,7 @@ services:
       - PUID=1000
       - PGID=1000
       - AUTOSTART=true
+      - SCRIPTINTERVAL=1h
       - extrastype=all
       - videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"
       - subtitlelanguage=en
