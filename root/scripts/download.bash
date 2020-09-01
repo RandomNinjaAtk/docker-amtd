@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.1.71"
+	echo "############################################ SCRIPT VERSION 1.1.72"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -160,6 +160,7 @@ DownloadTrailers () {
 		radarrid="${radarrmovieids[$id]}"
 		radarrmoviedata="$(echo "${radarrmovielist}" | jq -r ".[] | select(.id==$radarrid)")"
 		radarrmovietitle="$(echo "${radarrmoviedata}" | jq -r ".title")"
+		themoviedbmovieid="$(echo "${radarrmoviedata}" | jq -r ".tmdbId")"
 		if [ -f "/config/cache/${themoviedbmovieid}-complete" ]; then
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: All videos already downloaded, skipping..."
 			continue
@@ -169,7 +170,6 @@ DownloadTrailers () {
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: Movie Path does not exist, Skipping..."
 			continue
 		fi
-		themoviedbmovieid="$(echo "${radarrmoviedata}" | jq -r ".tmdbId")"
 		radarrmovieyear="$(echo "${radarrmoviedata}" | jq -r ".year")"
 		radarrmoviegenre="$(echo "${radarrmoviedata}" | jq -r ".genres | .[]" | head -n 1)"
 		radarrmoviefolder="$(basename "${radarrmoviepath}")"
