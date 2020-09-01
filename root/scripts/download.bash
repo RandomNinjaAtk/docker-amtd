@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.1.3"
+	echo "############################################ SCRIPT VERSION 1.1.4"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -37,8 +37,8 @@ Configuration () {
 	fi
 
 	radarrmovielist=$(curl -s --header "X-Api-Key:"${RadarrAPIkey} --request GET  "$RadarrUrl/api/movie")
-	radarrmovietotal=$(echo "${radarrmovielist}"  | jq -r '.[].id' | wc -l)
-	radarrmovieids=($(echo "${radarrmovielist}" | jq -r ".[].id"))
+	radarrmovietotal=$(echo "${radarrmovielist}"  | jq -r '.[] | select(.hasFile==true) | .id' | wc -l)
+	radarrmovieids=($(echo "${radarrmovielist}" | jq -r '.[] | select(.hasFile==true) | .id'))
 	
 	echo "Radarr: Verifying Movie Directory Access:"
 	for id in ${!radarrmovieids[@]}; do
