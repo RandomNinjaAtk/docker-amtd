@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.1.1"
+	echo "############################################ SCRIPT VERSION 1.1.2"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
