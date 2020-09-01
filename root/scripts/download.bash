@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.1.6"
+	echo "############################################ SCRIPT VERSION 1.1.7"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -18,7 +18,7 @@ Configuration () {
 	
 	if [ "$AUTOSTART" == "true" ]; then
 		echo "AMTD Script Autostart: ENABLED"
-		if [ ! -z "$SCRIPTINTERVAL" ]; then
+		if [ -z "$SCRIPTINTERVAL" ]; then
 			echo "WARNING: AMTD Script Interval not set! Using default..."
 			SCRIPTINTERVAL="15m"
 		fi
