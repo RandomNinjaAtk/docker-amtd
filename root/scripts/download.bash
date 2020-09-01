@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.0.7"
+	echo "############################################ SCRIPT VERSION 1.1.0"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -107,12 +107,36 @@ Configuration () {
 		FolderPermissions="766"
 		echo "Radarr Trailer Foldder Permissions: $FolderPermissions"
 	fi
+	
+	if [ ! -z "$SINGLETRAILER" ]; then
+		if [ "$SINGLETRAILER" == "true" ]; then
+			echo "Radarr Single Trailer: ENABLED"
+		else
+			echo "Radarr Single Trailer: DISABLED"
+		fi
+	else
+		echo "WARNING: SINGLETRAILER not set, using default..."
+		SINGLETRAILER="true"
+		echo "Radarr Single Trailer: ENABLED"
+	fi
+	
+	if [ ! -z "$USEFOLDERS" ]; then
+		if [ "$USEFOLDERS" == "true" ]; then
+			echo "Radarr Use Extras Folders: ENABLED"
+		else
+			echo "Radarr Use Extras Folders: DISABLED"
+		fi
+	else
+		echo "WARNING: USEFOLDERS not set, using default..."
+		USEFOLDERS="false"
+		echo "Radarr Use Extras Folders: DISABLED"
+	fi
 
 	if [ $error == 1 ]; then
 		echo "ERROR :: Exiting..."
 		exit 1
 	fi
-	sleep 5
+	sleep 2.5
 }
 
 DownloadTrailers () {
@@ -152,14 +176,13 @@ DownloadTrailers () {
 				if cat "/config/logs/NotFound.log" | grep -i ":: $radarrmovietitle ::" | read; then
 					sleep 0.1
 				else
-						echo "No Trailer Found :: $radarrmovietitle :: themoviedb missing Youtube Trailer ID"  >> "/config/logs/NotFound.log"
+					echo "No Trailer Found :: $radarrmovietitle :: themoviedb missing Youtube Trailer ID"  >> "/config/logs/NotFound.log"
 				fi
 			else
 				echo "No Trailer Found :: $radarrmovietitle :: themoviedb Missing Youtube Trailer ID"  >> "/config/logs/NotFound.log"
 			fi
 			continue
 		fi
-		find "$radarrmoviepath" -maxdepth 1 -type f -iname "*-trailer.mkv" -delete
 
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $themoviedbvideoslistidscount Extras Found!"
 		for id in ${!themoviedbvideoslistids[@]}; do
@@ -172,42 +195,87 @@ DownloadTrailers () {
 			themoviedbvidename="$(echo "$themoviedbvideodata" | jq -r ".name")"
 			themoviedbvidetype="$(echo "$themoviedbvideodata" | jq -r ".type")"
 			youtubeurl="https://www.youtube.com/watch?v=$themoviedbvidekey"
-			sanatizethemoviedbvidename="$(echo "${themoviedbvidename}" | sed -e 's/[\\/:\*\?"<>\|\x01-\x1F\x7F]//g' -e 's/^\(nul\|prn\|con\|lpt[0-9]\|com[0-9]\|aux\)\(\.\|$\)//i' -e 's/^\.*$//' -e 's/^$/NONAME/')"
+			sanatizethemoviedbvidename="$(echo "${themoviedbvidename}" |  sed -e "s%[^A-Za-z0-9._()'\ -]%%g" -e "s/  */ /g")"
+								
 			if [ "$themoviedbvidetype" == "Featurette" ]; then
-				folder="Featurettes"
+				if [ "$USEFOLDERS" == "true" ]; then
+					folder="Featurettes"
+				else
+					folder="Featurette"
+				fi
 			elif [ "$themoviedbvidetype" == "Trailer" ]; then
-				folder="Trailers"
+				if [ "$USEFOLDERS" == "true" ]; then
+					folder="Trailers"
+				else
+					folder="Trailer"
+				fi
 			elif [ "$themoviedbvidetype" == "Behind the Scenes" ]; then
 				folder="Behind The Scenes"
 			elif [ "$themoviedbvidetype" == "Clip" ]; then
-				folder="Scenes"
+				if [ "$USEFOLDERS" == "true" ]; then
+					folder="Scenes"
+				else
+					folder="Scene"
+				fi
 			elif [ "$themoviedbvidetype" == "Bloopers" ]; then
-				folder="Shorts"
+				if [ "$USEFOLDERS" == "true" ]; then
+					folder="Shorts"
+				else
+					folder="Short"
+				fi
 			elif [ "$themoviedbvidetype" == "Teaser" ]; then
-				folder="Trailers"
-			fi
+				folder="other"
+			fi				
+			
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename"
-
-			if [ -f "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" ]; then
+			
+			if [ "$USEFOLDERS" == "true" ]; then
+				if [ "$SINGLETRAILER" == "true" ]; then
+					if [ "$themoviedbvidetype" == "Trailer" ]; then
+						if find "$radarrmoviepath/$folder" -name "*.mkv" | read; then
+							echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Trailer found, skipping..."
+							continue
+						fi
+					fi
+				fi
+				outputfile="$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
+			else
+				if [ -d "$radarrmoviepath/${folder}s" ]; then
+					rm -rf "$radarrmoviepath/${folder}s"
+				fi
+				folder="$(echo "${folder,,}" | sed 's/ *//g')"
+				if [ "$SINGLETRAILER" == "true" ]; then
+					if [ "$themoviedbvidetype" == "Trailer" ]; then
+						if find "$radarrmoviepath" -name "*-trailer.mkv" | read; then
+							echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Trailer found, skipping..."
+							continue
+						fi
+					fi
+				fi
+				outputfile="$radarrmoviepath/$sanatizethemoviedbvidename-$folder.mkv"
+			fi			
+			
+			if [ -f "$outputfile" ]; then
 				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Trailer already Downloaded..."
 				continue
 			fi
-
-			if [ ! -d "$radarrmoviepath/$folder" ]; then
-				mkdir -p "$radarrmoviepath/$folder"
-				chmod $FolderPermissions "$radarrmoviepath/$folder"
-				chown abc:abc "$radarrmoviepath/$folder"
+			
+			if [ ! -d "/config/temp" ]; then
+				mkdir -p /config/temp
+			else
+				rm -rf /config/temp
+				mkdir -p /config/temp
 			fi
-
+			tempfile="/config/temp/download"
 
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Sending Trailer link to youtube-dl..."
 			echo "=======================START YOUTUBE-DL========================="
-			youtube-dl ${cookies} -o "$radarrmoviepath/$folder/$sanatizethemoviedbvidename" ${videoformat} --write-sub --sub-lang $subtitlelanguage --embed-subs --merge-output-format mkv --no-mtime --geo-bypass "$youtubeurl"
+			youtube-dl ${cookies} -o "$tempfile" ${videoformat} --write-sub --sub-lang $subtitlelanguage --embed-subs --merge-output-format mkv --no-mtime --geo-bypass "$youtubeurl"
 			echo "========================STOP YOUTUBE-DL========================="
-			if [ -f "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" ]; then
-				audiochannels="$(ffprobe -v quiet -print_format json -show_streams "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" | jq -r ".[] | .[] | select(.codec_type==\"audio\") | .channels")"
-				width="$(ffprobe -v quiet -print_format json -show_streams "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" | jq -r ".[] | .[] | select(.codec_type==\"video\") | .width")"
-				height="$(ffprobe -v quiet -print_format json -show_streams "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" | jq -r ".[] | .[] | select(.codec_type==\"video\") | .height")"
+			if [ -f "$tempfile.mkv" ]; then
+				audiochannels="$(ffprobe -v quiet -print_format json -show_streams "$tempfile.mkv" | jq -r ".[] | .[] | select(.codec_type==\"audio\") | .channels")"
+				width="$(ffprobe -v quiet -print_format json -show_streams "$tempfile.mkv" | jq -r ".[] | .[] | select(.codec_type==\"video\") | .width")"
+				height="$(ffprobe -v quiet -print_format json -show_streams "$tempfile.mkv" | jq -r ".[] | .[] | select(.codec_type==\"video\") | .height")"
 				if [[ "$width" -ge "3800" || "$height" -ge "2100" ]]; then
 					videoquality=3
 					qualitydescription="UHD"
@@ -236,20 +304,20 @@ DownloadTrailers () {
 				echo "========================START FFMPEG========================"
 				ffmpeg -y \
 					-ss 10 \
-					-i "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" \
+					-i "$tempfile.mkv" \
 					-frames:v 1 \
 					-vf "scale=640:-2" \
-					"$radarrmoviepath/$folder/cover.jpg"
+					"/config/temp/cover.jpg"
 				echo "========================STOP FFMPEG========================="
 				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Updating File Statistics via mkvtoolnix (mkvpropedit)..."
 				echo "========================START MKVPROPEDIT========================"
-				mkvpropedit "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" --add-track-statistics-tags
+				mkvpropedit "$tempfile.mkv" --add-track-statistics-tags
 				echo "========================STOP MKVPROPEDIT========================="
 				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: Embedding metadata with ffmpeg..."
 				echo "========================START FFMPEG========================"
-				mv "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" "$radarrmoviepath/$folder/temp.mkv"
+				mv "$tempfile.mkv" "$tempfile-temp.mkv"
 				ffmpeg -y \
-					-i "$radarrmoviepath/$folder/temp.mkv" \
+					-i "$tempfile-temp.mkv" \
 					-c copy \
 					-metadata TITLE="${themoviedbvidename}" \
 					-metadata DATE_RELEASE="$radarrmovieyear" \
@@ -259,33 +327,60 @@ DownloadTrailers () {
 					-metadata CONTENT_TYPE="Movie $folder" \
 					-metadata:s:v:0 title="$qualitydescription" \
 					-metadata:s:a:0 title="$audiodescription" \
-					-attach "$radarrmoviepath/$folder/cover.jpg" -metadata:s:t mimetype=image/jpeg \
-					"$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
+					-attach "/config/temp/cover.jpg" -metadata:s:t mimetype=image/jpeg \
+					"$tempfile.mkv"
 				echo "========================STOP FFMPEG========================="
-				if [ -f "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" ]; then
+				if [ -f "$tempfile.mkv" ]; then
 					echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: Metadata Embedding Complete!"
-					if [ -f "$radarrmoviepath/$folder/temp.mkv" ]; then
-						rm "$radarrmoviepath/$folder/temp.mkv"
+					if [ -f "$tempfile-temp.mkv" ]; then
+						rm "$tempfile-temp.mkv"
 					fi
 				else
 					echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER :: ERROR: Metadata Embedding Failed!"
-					mv "$radarrmoviepath/$folder/temp.mkv" "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
+					mv "$tempfile-temp.mkv" "$tempfile.mkv"
 				fi
-				if [ -f "$radarrmoviepath/$folder/cover.jpg" ]; then
-					rm "$radarrmoviepath/$folder/cover.jpg"
+				
+				if [ -f "$tempfile.mkv" ]; then
+					if [ "$USEFOLDERS" == "false" ]; then
+						mv "$tempfile.mkv" "$outputfile"
+						chmod $FilePermissions "$outputfile"
+						chown abc:abc "$outputfile"
+					else
+						if [ ! -d "$radarrmoviepath/$folder" ]; then
+							mkdir -p "$radarrmoviepath/$folder"
+							chmod $FolderPermissions "$radarrmoviepath/$folder"
+							chown abc:abc "$radarrmoviepath/$folder"
+						fi
+						if [ -d "$radarrmoviepath/$folder" ]; then
+							mv "$tempfile.mkv" "$outputfile"
+							chmod $FilePermissions "$outputfile"
+							chown abc:abc "$outputfile"
+						fi
+					fi
 				fi
-				chmod $FilePermissions "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
-				chown abc:abc "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
 				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Complete!"
 			else
 				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: TRAILER DOWNLOAD :: ERROR :: Skipping..."
 			fi
+			
+			if [ -d "/config/temp" ]; then
+				rm -rf /config/temp
+			fi
 		done
-		trailercount="$(find "$radarrmoviepath" -mindepth 2 -type f -iname "*.mkv" | wc -l)"
+		if [ "$USEFOLDERS" == "true" ]; then
+			trailercount="$(find "$radarrmoviepath" -mindepth 2 -type f -iname "*.mkv" | wc -l)"
+		else
+			trailercount="$(find "$radarrmoviepath" -mindepth 1 -type f -regex '.*\(-trailer.mkv\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\)' | wc -l)"
+		fi
+		
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $trailercount Extras Downloaded!"
 		touch "/config/cache/${themoviedbmovieid}-complete"
 	done
-	trailercount="$(find "$radarrmovierootpath" -mindepth 3 -type f -iname "*.mkv" | wc -l)"
+	if [ "$USEFOLDERS" == "true" ]; then
+		trailercount="$(find "$radarrmovierootpath" -mindepth 3 -type f -iname "*.mkv" | wc -l)"
+	else
+		trailercount="$(find "$radarrmovierootpath" -mindepth 2 -type f -regex '.*\(-trailer.mkv\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\)' | wc -l)"
+	fi
 	echo "############################################ $trailercount TRAILERS DOWNLOADED"
 	echo "############################################ SCRIPT COMPLETE"
 
@@ -293,4 +388,5 @@ DownloadTrailers () {
 
 Configuration
 DownloadTrailers
+
 exit 0
