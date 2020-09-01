@@ -10,12 +10,23 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.1.4"
+	echo "############################################ SCRIPT VERSION 1.1.6"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
 	error=0
-
+	
+	if [ "$AUTOSTART" == "true" ]; then
+		echo "AMTD Script Autostart: ENABLED"
+		if [ ! -z "$SCRIPTINTERVAL" ]; then
+			echo "WARNING: AMTD Script Interval not set! Using default..."
+			SCRIPTINTERVAL="15m"
+		fi
+		echo "AMTD Script Interval: $SCRIPTINTERVAL"
+	else
+		echo "AMTD Script Autostart: DISABLED"
+	fi
+	
 	#Verify Radarr Connectivity using v0.2 and v3 API url
 	radarrtestv02=$(curl -s "$RadarrUrl/api/system/status?apikey=${RadarrAPIkey}" | jq -r ".version")
 	radarrtestv3=$(curl -s "$RadarrUrl/api/v3/system/status?apikey=${RadarrAPIkey}" | jq -r ".version")
