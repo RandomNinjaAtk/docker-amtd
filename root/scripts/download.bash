@@ -16,11 +16,14 @@ Configuration () {
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
 	error=0
 
-	#Verify Radarr Connectivity
-	radarrtest=$(curl -s "$RadarrUrl/api/v3/system/status?apikey=${RadarrAPIkey}" | jq -r ".version")
-	if [ ! -z "$radarrtest" ]; then
-		if [ "$radarrtest" != "null" ]; then
-			echo "Radarr: Connection Valid, version: $radarrtest"
+	#Verify Radarr Connectivity using v0.2 and v3 API url
+	radarrtestv02=$(curl -s "$RadarrUrl/api/system/status?apikey=${RadarrAPIkey}" | jq -r ".version")
+	radarrtestv3=$(curl -s "$RadarrUrl/api/v3/system/status?apikey=${RadarrAPIkey}" | jq -r ".version")
+	if [ ! -z "$radarrtestv02" ] || [ ! -z "$radarrtestv3" ] ; then
+		if [ "$radarrtestv02" != "null" ]; then
+			echo "Radarr v0.2 API: Connection Valid, version: $radarrtestv02"
+		elif [ "$radarrtestv3" != "null" ]; then
+			echo "Radarr v3 API: Connection Valid, version: $radarrtestv3"
 		else
 			echo "ERROR: Cannot communicate with Radarr, most likely a...."
 			echo "ERROR: Invalid API Key: $RadarrAPIkey"
