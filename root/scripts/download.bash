@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.0.6"
+	echo "############################################ SCRIPT VERSION 1.0.7"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -202,7 +202,7 @@ DownloadTrailers () {
 
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Sending Trailer link to youtube-dl..."
 			echo "=======================START YOUTUBE-DL========================="
-			python3 /usr/local/bin/youtube-dl ${cookies} -o "$radarrmoviepath/$folder/$sanatizethemoviedbvidename" ${videoformat} --write-sub --sub-lang $subtitlelanguage --embed-subs --merge-output-format mkv --no-mtime --geo-bypass "$youtubeurl"
+			youtube-dl ${cookies} -o "$radarrmoviepath/$folder/$sanatizethemoviedbvidename" ${videoformat} --write-sub --sub-lang $subtitlelanguage --embed-subs --merge-output-format mkv --no-mtime --geo-bypass "$youtubeurl"
 			echo "========================STOP YOUTUBE-DL========================="
 			if [ -f "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" ]; then
 				audiochannels="$(ffprobe -v quiet -print_format json -show_streams "$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv" | jq -r ".[] | .[] | select(.codec_type==\"audio\") | .channels")"
