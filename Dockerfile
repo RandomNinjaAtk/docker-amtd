@@ -2,7 +2,7 @@ FROM lsiobase/ubuntu:focal
 LABEL maintainer="RandomNinjaAtk"
 
 ENV TITLE="Automated Movie Trailer Downloader (AMTD)"
-ENV VERSION="1.0.3"
+ENV VERSION="1.0.4"
 
 RUN \
 	echo "************ install dependencies ************" && \
@@ -10,6 +10,7 @@ RUN \
 	apt-get update -y && \
 	apt-get upgrade -y && \
 	apt-get install -y --no-install-recommends \
+		curl \
 		jq \
 		python3 \
 		python3-pip \
@@ -19,12 +20,10 @@ RUN \
 		/tmp/* \
 		/var/lib/apt/lists/* \
 		/var/tmp/* && \
-	echo "************ install youtube-dl ************" && \
-	curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl && \
-	chmod a+rx /usr/local/bin/youtube-dl && \
-	echo "************ install mp4 tagging software ************" && \
+	echo "************ install python packages ************" && \
 	pip3 install --no-cache-dir -U \
-		mutagen
+		mutagen \
+		youtube_dl
 
 # copy local files
 COPY root/ /
