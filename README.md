@@ -53,8 +53,10 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e extrastype=all` | all or trailers :: all downloads all available videos (trailers, clips, featurette, etc...) :: trailers only downloads trailers |
 | `-e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"` | For guidence, please see youtube-dl documentation |
 | `-e subtitlelanguage=en` | Desired Language Code :: For guidence, please see youtube-dl documentation. |
-| `-e FilePermissions=666` | Based on chmod linux permissions |
-| `-e FolderPermissions=766` | Based on chmod linux permissions |
+| `-e USEFOLDERS=false` | true = enabled :: Creates subfolders within the movie folder for extras |
+| `-e SINGLETRAILER=true` | true = enabled :: Only downloads the first available trailer, does not apply to other extras type |
+| `-e FilePermissions=644` | Based on chmod linux permissions |
+| `-e FolderPermissions=755` | Based on chmod linux permissions |
 
 ### docker
 
@@ -69,8 +71,10 @@ docker create \
   -e extrastype=all \
   -e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio" \
   -e subtitlelanguage=en \
-  -e FilePermissions=666 \
-  -e FolderPermissions=766 \
+  -e USEFOLDERS=false \
+  -e SINGLETRAILER=true \
+  -e FilePermissions=644 \
+  -e FolderPermissions=755 \
   -e RadarrUrl=http://x.x.x.x:7878 \
   -e RadarrAPIkey=RADARRAPIKEY \
   --restart unless-stopped \
@@ -83,7 +87,6 @@ docker create \
 Compatible with docker-compose v2 schemas.
 
 ```
----
 version: "2.1"
 services:
   amd:
@@ -99,8 +102,10 @@ services:
       - extrastype=all
       - videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"
       - subtitlelanguage=en
-      - FilePermissions=666
-      - FolderPermissions=766
+      - USEFOLDERS=false
+      - SINGLETRAILER=true
+      - FilePermissions=644
+      - FolderPermissions=755
       - RadarrUrl=http://x.x.x.x:7878
       - RadarrAPIkey=RADARRAPIKEY
     restart: unless-stopped
