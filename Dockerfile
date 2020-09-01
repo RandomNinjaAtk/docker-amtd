@@ -2,7 +2,8 @@ FROM lsiobase/ubuntu:focal
 LABEL maintainer="RandomNinjaAtk"
 
 ENV TITLE="Automated Movie Trailer Downloader (AMTD)"
-ENV VERSION="1.0.5"
+ENV TITLESHORT="AMTD"
+ENV VERSION="1.0.6"
 
 RUN \
 	echo "************ install dependencies ************" && \
