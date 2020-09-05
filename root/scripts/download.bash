@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.1.9"
+	echo "############################################ SCRIPT VERSION 1.1.10"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -207,7 +207,7 @@ DownloadTrailers () {
 			themoviedbvidename="$(echo "$themoviedbvideodata" | jq -r ".name")"
 			themoviedbvidetype="$(echo "$themoviedbvideodata" | jq -r ".type")"
 			youtubeurl="https://www.youtube.com/watch?v=$themoviedbvidekey"
-			sanatizethemoviedbvidename="$(echo "${themoviedbvidename}" |  sed -e "s%[^A-Za-z0-9._()'\ -]%%g" -e "s/  */ /g")"
+			sanatizethemoviedbvidename="$(echo "${themoviedbvidename}" | sed -e "s%[^[:alpha:][:digit:]._()' -]%%g" -e "s/  */ /g")"
 								
 			if [ "$themoviedbvidetype" == "Featurette" ]; then
 				if [ "$USEFOLDERS" == "true" ]; then
@@ -236,7 +236,7 @@ DownloadTrailers () {
 					folder="Short"
 				fi
 			elif [ "$themoviedbvidetype" == "Teaser" ]; then
-				folder="other"
+				folder="Other"
 			fi				
 			
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename"
