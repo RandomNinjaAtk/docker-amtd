@@ -207,7 +207,7 @@ DownloadTrailers () {
 			themoviedbvidename="$(echo "$themoviedbvideodata" | jq -r ".name")"
 			themoviedbvidetype="$(echo "$themoviedbvideodata" | jq -r ".type")"
 			youtubeurl="https://www.youtube.com/watch?v=$themoviedbvidekey"
-			sanatizethemoviedbvidename="$(echo "${themoviedbvidename}" | sed -e "s%[^[:alpha:][:digit:]._()' -]%%g" -e "s/  */ /g")"
+			sanatizethemoviedbvidename="$(echo "${themoviedbvidename}" | sed -e 's/[\\/:\*\?"<>\|\x01-\x1F\x7F]//g'  -e "s/  */ /g")"
 								
 			if [ "$themoviedbvidetype" == "Featurette" ]; then
 				if [ "$USEFOLDERS" == "true" ]; then
