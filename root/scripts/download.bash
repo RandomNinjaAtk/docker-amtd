@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.1.10"
+	echo "############################################ SCRIPT VERSION 1.2.0"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -82,9 +82,9 @@ Configuration () {
 
 	# videoformat
 	if [ ! -z "$videoformat" ]; then
-		echo "Radarr Trailer Format Set To: $videoformat"
+		echo "Radarr Extras Format Set To: $videoformat"
 	else
-		echo "Radarr Trailer Format Set To: --format bestvideo[vcodec*=avc1]+bestaudio"
+		echo "Radarr Extras Format Set To: --format bestvideo[vcodec*=avc1]+bestaudio"
 		videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"
 	fi
 
@@ -96,30 +96,40 @@ Configuration () {
 		echo "Radarr Extras Selection: trailers"
 		extrastype="trailers"
 	fi
+	
+	# LANGUAGES
+	if [ ! -z "$LANGUAGES" ]; then
+		LANGUAGES="${LANGUAGES,,}"
+		echo "Radarr Extras Wanted Languages: $LANGUAGES (first one found is used)"
+	else
+		LANGUAGES="en"
+		echo "Radarr Extras Wanted Languages: $LANGUAGES (first one found is used)"
+	fi
+	
 
 	# subtitlelanguage
 	if [ ! -z "$subtitlelanguage" ]; then
 		subtitlelanguage="${subtitlelanguage,,}"
-		echo "Radarr Trailer Subtitle Language: $subtitlelanguage"
+		echo "Radarr Extras Subtitle Language: $subtitlelanguage"
 	else
 		subtitlelanguage="en"
-		echo "Radarr Trailer Subtitle Language: $subtitlelanguage"
+		echo "Radarr Extras Subtitle Language: $subtitlelanguage"
 	fi
 
 	if [ ! -z "$FilePermissions" ]; then
-		echo "Radarr Trailer File Permissions: $FilePermissions"
+		echo "Radarr Extras File Permissions: $FilePermissions"
 	else
 		echo "ERROR: FilePermissions not set, using default..."
 		FilePermissions="666"
-		echo "Radarr Trailer File Permissions: $FilePermissions"
+		echo "Radarr Extras File Permissions: $FilePermissions"
 	fi
 	
 	if [ ! -z "$FolderPermissions" ]; then
-		echo "Radarr Trailer Foldder Permissions: $FolderPermissions"
+		echo "Radarr Extras Foldder Permissions: $FolderPermissions"
 	else
 		echo "WARNING: FolderPermissions not set, using default..."
 		FolderPermissions="766"
-		echo "Radarr Trailer Foldder Permissions: $FolderPermissions"
+		echo "Radarr Extras Foldder Permissions: $FolderPermissions"
 	fi
 	
 	if [ ! -z "$SINGLETRAILER" ]; then
@@ -175,15 +185,29 @@ DownloadTrailers () {
 		radarrmoviefolder="$(basename "${radarrmoviepath}")"
 		radarrmovieostudio="$(echo "${radarrmoviedata}" | jq -r ".studio")"		
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle"
-		themoviedbvideoslistdata=$(curl -s "https://api.themoviedb.org/3/movie/${themoviedbmovieid}/videos?api_key=${themoviedbapikey}&language=$subtitlelanguage")
-		if [ "$extrastype" == "all" ]; then
-			themoviedbvideoslistids=($(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$subtitlelanguage\") | .id"))
-		else
-			themoviedbvideoslistids=($(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$subtitlelanguage\" and .type==\"Trailer\") | .id"))
-		fi
-		themoviedbvideoslistidscount=$(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$subtitlelanguage\") | .id" | wc -l)
+		
+		
+		IFS=',' read -r -a filters <<< "$LANGUAGES"
+		for filter in "${filters[@]}"
+		do
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: Searching for \"$filter\" extras..."
+			themoviedbvideoslistdata=$(curl -s "https://api.themoviedb.org/3/movie/${themoviedbmovieid}/videos?api_key=${themoviedbapikey}&language=$filter")
+			if [ "$extrastype" == "all" ]; then
+				themoviedbvideoslistids=($(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$filter\") | .id"))
+			else
+				themoviedbvideoslistids=($(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$filter\" and .type==\"Trailer\") | .id"))
+			fi
+			themoviedbvideoslistidscount=$(echo "$themoviedbvideoslistdata" | jq -r ".results[] |  select(.site==\"YouTube\" and .iso_639_1==\"$filter\") | .id" | wc -l)
+			if [ -z "$themoviedbvideoslistids" ]; then
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: None found..."
+				continue
+			else
+				break
+			fi
+		done
+		
 		if [ -z "$themoviedbvideoslistids" ]; then
-			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: No Trailer ID Found ($radarrmovietitle), Skipping..."
+			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: ERROR: No Extras in wanted languages found, Skipping..."
 			if [ -f "/config/logs/NotFound.log" ]; then
 				if cat "/config/logs/NotFound.log" | grep -i ":: $radarrmovietitle ::" | read; then
 					sleep 0.1
