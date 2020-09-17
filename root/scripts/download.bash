@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.2.0"
+	echo "############################################ SCRIPT VERSION 1.2.1"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -80,14 +80,6 @@ Configuration () {
 		cookies=""
 	fi
 
-	# videoformat
-	if [ ! -z "$videoformat" ]; then
-		echo "Radarr Extras Format Set To: $videoformat"
-	else
-		echo "Radarr Extras Format Set To: --format bestvideo[vcodec*=avc1]+bestaudio"
-		videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"
-	fi
-
 	# extrastype
 	if [ ! -z "$extrastype" ]; then
 		echo "Radarr Extras Selection: $extrastype"
@@ -100,10 +92,18 @@ Configuration () {
 	# LANGUAGES
 	if [ ! -z "$LANGUAGES" ]; then
 		LANGUAGES="${LANGUAGES,,}"
-		echo "Radarr Extras Wanted Languages: $LANGUAGES (first one found is used)"
+		echo "Radarr Extras Audio Languages: $LANGUAGES (first one found is used)"
 	else
 		LANGUAGES="en"
-		echo "Radarr Extras Wanted Languages: $LANGUAGES (first one found is used)"
+		echo "Radarr Extras Audio Languages: $LANGUAGES (first one found is used)"
+	fi
+	
+	# videoformat
+	if [ ! -z "$videoformat" ]; then
+		echo "Radarr Extras Format Set To: $videoformat"
+	else
+		echo "Radarr Extras Format Set To: --format bestvideo[vcodec*=avc1]+bestaudio"
+		videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"
 	fi
 	
 
