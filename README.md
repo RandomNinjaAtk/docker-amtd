@@ -52,6 +52,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e RadarrUrl=http://x.x.x.x:7878` | Set domain or IP to your Radarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s. |
 | `-e RadarrAPIkey=08d108d108d108d108d108d108d108d1` | Radarr API key. |
 | `-e extrastype=all` | all or trailers :: all downloads all available videos (trailers, clips, featurette, etc...) :: trailers only downloads trailers |
+| `-e LANGUAGES=en,de` | Set the primary desired language, if not found, fallback to next langauge in the list... (this is a "," separated list of ISO 639-1 language codes) |
 | `-e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"` | For guidence, please see youtube-dl documentation |
 | `-e subtitlelanguage=en` | Desired Language Code :: For guidence, please see youtube-dl documentation. |
 | `-e USEFOLDERS=false` | true = enabled :: Creates subfolders within the movie folder for extras |
@@ -71,6 +72,7 @@ docker create \
   -e AUTOSTART=true \
   -e SCRIPTINTERVAL=1h \
   -e extrastype=all \
+  -e LANGUAGES=en,de \
   -e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio" \
   -e subtitlelanguage=en \
   -e USEFOLDERS=false \
@@ -103,6 +105,7 @@ services:
       - AUTOSTART=true
       - SCRIPTINTERVAL=1h
       - extrastype=all
+      - LANGUAGES=en,de \
       - videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"
       - subtitlelanguage=en
       - USEFOLDERS=false
