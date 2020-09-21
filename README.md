@@ -105,8 +105,8 @@ services:
       - AUTOSTART=true
       - SCRIPTINTERVAL=1h
       - extrastype=all
-      - LANGUAGES=en,de \
-      - videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"
+      - LANGUAGES=en,de
+      - videoformat=--format bestvideo[vcodec*=avc1]+bestaudio
       - subtitlelanguage=en
       - USEFOLDERS=false
       - SINGLETRAILER=true
