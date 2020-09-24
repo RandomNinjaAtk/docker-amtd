@@ -414,7 +414,9 @@ DownloadTrailers () {
 		fi
 		
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $trailercount Extras Downloaded!"
-		touch "/config/cache/${themoviedbmovieid}-complete"
+		if [ "$trailercount" -ne "0" ]; then
+			touch "/config/cache/${themoviedbmovieid}-complete"
+		fi
 	done
 	if [ "$USEFOLDERS" == "true" ]; then
 		trailercount="$(find "$radarrmovierootpath" -mindepth 3 -type f -iname "*.mkv" | wc -l)"
