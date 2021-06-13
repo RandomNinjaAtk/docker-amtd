@@ -50,7 +50,7 @@ Configuration () {
 	radarrmovielist=$(curl -s --request GET  "$RadarrUrl/api/v3/movie?apiKey="${RadarrAPIkey})	
 	radarrmovietotal=$(echo "${radarrmovielist}"  | jq -r '.[] | select(.hasFile==true) | .id' | wc -l)
 	radarrmovieids=($(echo "${radarrmovielist}" | jq -r '.[] | select(.hasFile==true) | .id'))
-	
+	#test
 	echo "Radarr: Verifying Movie Directory Access:"
 	for id in ${!radarrmovieids[@]}; do
 		currentprocessid=$(( $id + 1 ))
