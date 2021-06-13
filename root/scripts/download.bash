@@ -46,7 +46,7 @@ Configuration () {
 		echo "ERROR: API Key: $RadarrAPIkey"
 		error=1
 	fi
- 
+
 	radarrmovielist=$(curl -s --request GET  "$RadarrUrl/api/v3/movie?apiKey="${RadarrAPIkey})	
 	radarrmovietotal=$(echo "${radarrmovielist}"  | jq -r '.[] | select(.hasFile==true) | .id' | wc -l)
 	radarrmovieids=($(echo "${radarrmovielist}" | jq -r '.[] | select(.hasFile==true) | .id'))
@@ -58,6 +58,7 @@ Configuration () {
 		radarrmoviedata="$(echo "${radarrmovielist}" | jq -r ".[] | select(.id==$radarrid)")"
 		radarrmoviepath="$(echo "${radarrmoviedata}" | jq -r ".path")"
 		radarrmovierootpath="$(dirname "$radarrmoviepath")"
+
 		if [ -d "$radarrmovierootpath" ]; then
 			echo "Radarr: Root Media Folder Found: $radarrmovierootpath"
 			error=0
@@ -68,6 +69,7 @@ Configuration () {
 			error=1
 			break
 		fi
+		
 	done
 
 	echo "youtube-dl: Checking for cookies.txt"
