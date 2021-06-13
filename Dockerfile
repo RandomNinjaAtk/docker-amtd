@@ -1,7 +1,7 @@
 FROM lsiobase/ubuntu:focal
-LABEL maintainer="RandomNinjaAtk"
+LABEL maintainer="pyrater"
 
-ENV TITLE="Automated Movie Trailer Downloader (AMTD)"
+ENV TITLE="Automated Movie Trailer Downloader (AMTD) - Forked"
 ENV TITLESHORT="AMTD"
 ENV VERSION="1.0.6"
 
