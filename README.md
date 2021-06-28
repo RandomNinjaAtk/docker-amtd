@@ -56,6 +56,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"` | For guidence, please see youtube-dl documentation |
 | `-e subtitlelanguage=en` | Desired Language Code :: For guidence, please see youtube-dl documentation. |
 | `-e USEFOLDERS=false` | true = enabled :: Creates subfolders within the movie folder for extras |
+| `-e PREFER_EXISTING=false` | true = enabled :: Checks for existing "trailer" file, and skips it if found |
 | `-e SINGLETRAILER=true` | true = enabled :: Only downloads the first available trailer, does not apply to other extras type |
 | `-e FilePermissions=644` | Based on chmod linux permissions |
 | `-e FolderPermissions=755` | Based on chmod linux permissions |
@@ -76,6 +77,7 @@ docker create \
   -e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio" \
   -e subtitlelanguage=en \
   -e USEFOLDERS=false \
+  -e PREFER_EXISTING=false \
   -e SINGLETRAILER=true \
   -e FilePermissions=644 \
   -e FolderPermissions=755 \
@@ -110,6 +112,7 @@ services:
       - subtitlelanguage=en
       - USEFOLDERS=false
       - SINGLETRAILER=true
+      - PREFER_EXISTING=false
       - FilePermissions=644
       - FolderPermissions=755
       - RadarrUrl=http://x.x.x.x:7878
