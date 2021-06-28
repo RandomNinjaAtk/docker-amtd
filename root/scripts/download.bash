@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.2.2"
+	echo "############################################ SCRIPT VERSION 1.2.3"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -156,6 +156,18 @@ Configuration () {
 		echo "Radarr Use Extras Folders: DISABLED"
 	fi
 
+	if [ ! -z "$PREFER_EXISTING" ]; then
+		if [ "$PREFER_EXISTING" == "true" ]; then
+			echo "Prefer Existing Trailer: ENABLED"
+		else
+			echo "Prefer Existing Trailer: DISABLED"
+		fi
+	else
+		echo "WARNING: PREFER_EXISTING not set, using default..."
+		PREFER_EXISTING="false"
+		echo "Prefer Existing Trailer: DISABLED"
+	fi
+
 	if [ $error == 1 ]; then
 		echo "ERROR :: Exiting..."
 		exit 1
@@ -274,6 +286,13 @@ DownloadTrailers () {
 						fi
 					fi
 				fi
+				if [ "$PREFER_EXISTING" == "true" ]; then
+					# Check for existing manual trailer
+					if find "$radarrmoviepath/$folder" -name "*.*" | read; then
+						echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Manual Trailer found, skipping..."
+						continue
+					fi
+				fi
 				outputfile="$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
 			else
 				if [[ -d "$radarrmoviepath/${folder}s" || -d "$radarrmoviepath/${folder}" ]]; then
@@ -288,6 +307,16 @@ DownloadTrailers () {
 					if [ "$themoviedbvidetype" == "Trailer" ]; then
 						if find "$radarrmoviepath" -name "*-trailer.mkv" | read; then
 							echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Trailer found, skipping..."
+							continue
+						fi
+					fi
+				fi
+
+				if [ "$PREFER_EXISTING" == "true" ]; then
+					if [ "$themoviedbvidetype" == "Trailer" ]; then
+						# Check for existing manual trailer
+						if find "$radarrmoviepath" -name "*-trailer.*" | read; then
+							echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Manual Trailer found, skipping..."
 							continue
 						fi
 					fi
