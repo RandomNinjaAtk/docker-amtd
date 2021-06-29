@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.2.3"
+	echo "############################################ SCRIPT VERSION 1.2.4"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -288,9 +288,11 @@ DownloadTrailers () {
 				fi
 				if [ "$PREFER_EXISTING" == "true" ]; then
 					# Check for existing manual trailer
-					if find "$radarrmoviepath/$folder" -name "*.*" | read; then
-						echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Manual Trailer found, skipping..."
-						continue
+					if [ "$themoviedbvidetype" == "Trailer" ]; then
+						if find "$radarrmoviepath/$folder" -name "*.*" | read; then
+							echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Manual Trailer found, skipping..."
+							continue
+						fi
 					fi
 				fi
 				outputfile="$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
