@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.2.4"
+	echo "############################################ SCRIPT VERSION 1.2.5"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -184,8 +184,13 @@ DownloadTrailers () {
 		radarrmovietitle="$(echo "${radarrmoviedata}" | jq -r ".title")"
 		themoviedbmovieid="$(echo "${radarrmoviedata}" | jq -r ".tmdbId")"
 		if [ -f "/config/cache/${themoviedbmovieid}-complete" ]; then
-			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: All videos already downloaded, skipping..."
-			continue
+			if [[ $(find "/config/cache/${themoviedbmovieid}-complete" -mtime +7 -print) ]]; then
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: Checking for changes..."
+				rm "/config/cache/${themoviedbmovieid}-complete"
+			else
+				echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: All videos already downloaded, skipping..."
+				continue
+			fi
 		fi
 		radarrmoviepath="$(echo "${radarrmoviedata}" | jq -r ".path")"
 		if [ ! -d "$radarrmoviepath" ]; then
