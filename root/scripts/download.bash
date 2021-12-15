@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.2.5"
+	echo "############################################ SCRIPT VERSION 1.2.6"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -69,17 +69,7 @@ Configuration () {
 			break
 		fi
 	done
-
-	echo "youtube-dl: Checking for cookies.txt"
-	if [ -f "/config/cookies/cookies.txt" ]; then
-		echo "youtube-dl: /config/cookies/cookies.txt found!"
-		cookies="--cookies /config/cookies/cookies.txt"
-	else
-		echo "WARNING: youtube-dl cookies.txt not found at the following location: /config/cookies/cookies.txt"
-		echo "WARNING: not having cookies may result in failed downloads..."
-		cookies=""
-	fi
-
+	
 	# extrastype
 	if [ ! -z "$extrastype" ]; then
 		echo "Radarr Extras Selection: $extrastype"
@@ -346,7 +336,7 @@ DownloadTrailers () {
 
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Sending Trailer link to youtube-dl..."
 			echo "=======================START YOUTUBE-DL========================="
-			youtube-dl ${cookies} -o "$tempfile" ${videoformat} --write-sub --sub-lang $subtitlelanguage --embed-subs --merge-output-format mkv --no-mtime --geo-bypass "$youtubeurl"
+			yt-dlp -o "$tempfile" ${videoformat} --write-sub --sub-lang $subtitlelanguage --embed-subs --merge-output-format mkv --no-mtime --geo-bypass "$youtubeurl"
 			echo "========================STOP YOUTUBE-DL========================="
 			if [ -f "$tempfile.mkv" ]; then
 				audiochannels="$(ffprobe -v quiet -print_format json -show_streams "$tempfile.mkv" | jq -r ".[] | .[] | select(.codec_type==\"audio\") | .channels")"
