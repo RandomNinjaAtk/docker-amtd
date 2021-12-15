@@ -3,7 +3,7 @@ LABEL maintainer="RandomNinjaAtk"
 
 ENV TITLE="Automated Movie Trailer Downloader (AMTD)"
 ENV TITLESHORT="AMTD"
-ENV VERSION="1.0.7"
+ENV VERSION="1.0.8"
 
 RUN \
 	echo "************ install dependencies ************" && \
@@ -24,7 +24,6 @@ RUN \
 	echo "************ install python packages ************" && \
 	python3 -m pip install --no-cache-dir -U \
 		mutagen \
-		youtube_dl \
 		yt-dlp
 
 # copy local files
