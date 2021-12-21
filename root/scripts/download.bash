@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.2.7"
+	echo "############################################ SCRIPT VERSION 1.2.8"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -137,16 +137,16 @@ Configuration () {
 	if [ ! -z "$USEFOLDERS" ]; then
 		if [ "$USEFOLDERS" == "true" ]; then
 			echo "Radarr Use Extras Folders: ENABLED"
-			if [ "$end_client" == "plex" ]; then
-				echo "Extras Folders configured for Plex compatibility (end_client=$end_client)"
-			elif [ "$end_client" == "emby" ]; then
-				echo "Extras Folders configured for Emby compatibility (end_client=$end_client)"
-			elif [ "$end_client" == "jellyfin" ]; then
-				echo "Extras Folders configured for Jellyfin compatibility (end_client=$end_client)"
+			if [ "$EndClient" == "plex" ]; then
+				echo "Extras Folders configured for Plex compatibility (end_client=$EndClient)"
+			elif [ "$EndClient" == "emby" ]; then
+				echo "Extras Folders configured for Emby compatibility (end_client=$EndClient)"
+			elif [ "$EndClient" == "jellyfin" ]; then
+				echo "Extras Folders configured for Jellyfin compatibility (end_client=$EndClient)"
 			else
-				end_client=plex
+				EndClient=plex
 				echo "WARNING: end_client not set, using default..."
-				echo "Extras Folders configured for Plex compatibility (end_client=$end_client)"
+				echo "Extras Folders configured for Plex compatibility (end_client=$EndClient)"
 			fi
 			
 		else
@@ -254,7 +254,7 @@ DownloadTrailers () {
 								
 			if [ "$themoviedbvidetype" == "Featurette" ]; then
 				if [ "$USEFOLDERS" == "true" ]; then
-					if [ "$end_client" == "jellyfin" ]; then
+					if [ "$EndClient" == "jellyfin" ]; then
 						folder="featurettes"
 					else
 						folder="Featurettes"
@@ -264,7 +264,7 @@ DownloadTrailers () {
 				fi
 			elif [ "$themoviedbvidetype" == "Trailer" ]; then
 				if [ "$USEFOLDERS" == "true" ]; then
-					if [ "$end_client" == "jellyfin" ]; then
+					if [ "$EndClient" == "jellyfin" ]; then
 						folder="trailers"
 					else
 						folder="Trailers"
@@ -273,10 +273,18 @@ DownloadTrailers () {
 					folder="Trailer"
 				fi
 			elif [ "$themoviedbvidetype" == "Behind the Scenes" ]; then
-				folder="Behind The Scenes"
+				if [ "$USEFOLDERS" == "true" ]; then
+					if [ "$EndClient" == "jellyfin" ]; then
+						folder="behind the scenes"
+					else
+						folder="Behind The Scenes"
+					fi
+				else
+					folder="Behind The Scenes"
+				fi
 			elif [ "$themoviedbvidetype" == "Clip" ]; then
 				if [ "$USEFOLDERS" == "true" ]; then
-					if [ "$end_client" == "jellyfin" ]; then
+					if [ "$EndClient" == "jellyfin" ]; then
 						folder="scenes"
 					else
 						folder="Scenes"
@@ -286,7 +294,7 @@ DownloadTrailers () {
 				fi
 			elif [ "$themoviedbvidetype" == "Bloopers" ]; then
 				if [ "$USEFOLDERS" == "true" ]; then
-					if [ "$end_client" == "jellyfin" ]; then
+					if [ "$EndClient" == "jellyfin" ]; then
 						folder="shorts"
 					else
 						folder="Shorts"
@@ -296,7 +304,7 @@ DownloadTrailers () {
 				fi
 			elif [ "$themoviedbvidetype" == "Teaser" ]; then
 				if [ "$USEFOLDERS" == "true" ]; then
-					if [ "$end_client" == "jellyfin" ]; then
+					if [ "$EndClient" == "jellyfin" ]; then
 						folder="extras"
 					else
 						folder="Other"
