@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.2.6"
+	echo "############################################ SCRIPT VERSION 1.2.7"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -137,6 +137,18 @@ Configuration () {
 	if [ ! -z "$USEFOLDERS" ]; then
 		if [ "$USEFOLDERS" == "true" ]; then
 			echo "Radarr Use Extras Folders: ENABLED"
+			if [ "$end_client" == "plex" ]; then
+				echo "Extras Folders configured for Plex compatibility (end_client=$end_client)"
+			elif [ "$end_client" == "emby" ]; then
+				echo "Extras Folders configured for Emby compatibility (end_client=$end_client)"
+			elif [ "$end_client" == "jellyfin" ]; then
+				echo "Extras Folders configured for Jellyfin compatibility (end_client=$end_client)"
+			else
+				end_client=plex
+				echo "WARNING: end_client not set, using default..."
+				echo "Extras Folders configured for Plex compatibility (end_client=$end_client)"
+			fi
+			
 		else
 			echo "Radarr Use Extras Folders: DISABLED"
 		fi
@@ -242,13 +254,21 @@ DownloadTrailers () {
 								
 			if [ "$themoviedbvidetype" == "Featurette" ]; then
 				if [ "$USEFOLDERS" == "true" ]; then
-					folder="Featurettes"
+					if [ "$end_client" == "jellyfin" ]; then
+						folder="featurettes"
+					else
+						folder="Featurettes"
+					fi
 				else
 					folder="Featurette"
 				fi
 			elif [ "$themoviedbvidetype" == "Trailer" ]; then
 				if [ "$USEFOLDERS" == "true" ]; then
-					folder="Trailers"
+					if [ "$end_client" == "jellyfin" ]; then
+						folder="trailers"
+					else
+						folder="Trailers"
+					fi
 				else
 					folder="Trailer"
 				fi
@@ -256,18 +276,34 @@ DownloadTrailers () {
 				folder="Behind The Scenes"
 			elif [ "$themoviedbvidetype" == "Clip" ]; then
 				if [ "$USEFOLDERS" == "true" ]; then
-					folder="Scenes"
+					if [ "$end_client" == "jellyfin" ]; then
+						folder="scenes"
+					else
+						folder="Scenes"
+					fi
 				else
 					folder="Scene"
 				fi
 			elif [ "$themoviedbvidetype" == "Bloopers" ]; then
 				if [ "$USEFOLDERS" == "true" ]; then
-					folder="Shorts"
+					if [ "$end_client" == "jellyfin" ]; then
+						folder="shorts"
+					else
+						folder="Shorts"
+					fi
 				else
 					folder="Short"
 				fi
 			elif [ "$themoviedbvidetype" == "Teaser" ]; then
-				folder="Other"
+				if [ "$USEFOLDERS" == "true" ]; then
+					if [ "$end_client" == "jellyfin" ]; then
+						folder="extras"
+					else
+						folder="Other"
+					fi
+				else
+					folder="Other"
+				fi
 			fi				
 			
 			echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename"
