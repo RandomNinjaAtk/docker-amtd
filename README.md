@@ -56,6 +56,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e videoformat="--format bestvideo[vcodec*=avc1]+bestaudio"` | For guidence, please see youtube-dl documentation |
 | `-e subtitlelanguage=en` | Desired Language Code :: For guidence, please see youtube-dl documentation. |
 | `-e USEFOLDERS=false` | true = enabled :: Creates subfolders within the movie folder for extras |
+| `-e EndClient=plex` | plex or emby or jellyfin :: Select the appropriate client for maximum compatibility |
 | `-e PREFER_EXISTING=false` | true = enabled :: Checks for existing "trailer" file, and skips it if found |
 | `-e SINGLETRAILER=true` | true = enabled :: Only downloads the first available trailer, does not apply to other extras type |
 | `-e FilePermissions=644` | Based on chmod linux permissions |
@@ -83,6 +84,7 @@ docker create \
   -e FolderPermissions=755 \
   -e RadarrUrl=http://x.x.x.x:7878 \
   -e RadarrAPIkey=RADARRAPIKEY \
+  -e EndClient=plex \
   --restart unless-stopped \
   randomninjaatk/amtd 
 ```
@@ -117,6 +119,7 @@ services:
       - FolderPermissions=755
       - RadarrUrl=http://x.x.x.x:7878
       - RadarrAPIkey=RADARRAPIKEY
+      - EndClient=plex
     restart: unless-stopped
 ```
 
