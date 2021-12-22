@@ -10,7 +10,7 @@ Configuration () {
 	echo ""
 	sleep 2
 	echo "############################################ $TITLE"
-	echo "############################################ SCRIPT VERSION 1.2.8"
+	echo "############################################ SCRIPT VERSION 1.2.81"
 	echo "############################################ DOCKER VERSION $VERSION"
 	echo "############################################ CONFIGURATION VERIFICATION"
 	themoviedbapikey="3b7751e3179f796565d88fdb2fcdf426"
@@ -145,7 +145,7 @@ Configuration () {
 				echo "Extras Folders configured for Jellyfin compatibility (end_client=$EndClient)"
 			else
 				EndClient=plex
-				echo "WARNING: end_client not set, using default..."
+				echo "WARNING: EndClient not set, using default..."
 				echo "Extras Folders configured for Plex compatibility (end_client=$EndClient)"
 			fi
 			
