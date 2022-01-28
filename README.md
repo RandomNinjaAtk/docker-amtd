@@ -97,7 +97,7 @@ Compatible with docker-compose v2 schemas.
 ```
 version: "2.1"
 services:
-  amd:
+  amtd:
     image: randomninjaatk/amtd 
     container_name: amtd
     volumes:
