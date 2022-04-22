@@ -13,8 +13,12 @@ RUN \
 	apt-get install -y --no-install-recommends \
 		curl \
 		jq \
+		gcc \
+		libc6-dev \
 		python3 \
 		python3-pip \
+		python3-dev \
+		g++ \
 		ffmpeg \
 		mkvtoolnix && \
 	rm -rf \
