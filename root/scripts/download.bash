@@ -26,6 +26,17 @@ Configuration () {
 	else
 		echo "$TITLESHORT Script Autostart: DISABLED"
 	fi
+
+	#Check For File Naming
+	if [ ! -z ${FILENAME} ]
+		filename=${FILENAME}
+    else
+    	if [ "$USEFOLDERS" == "true" ]
+    		filename=".mkv"
+    	else
+    		filename="-trailer.mkv"
+    	fi
+    fi
 	
 	#Verify Radarr Connectivity using v0.2 and v3 API url
 	radarrtestv02=$(curl -s "$RadarrUrl/api/system/status?apikey=${RadarrAPIkey}" | jq -r ".version")
@@ -319,7 +330,7 @@ DownloadTrailers () {
 			if [ "$USEFOLDERS" == "true" ]; then
 				if [ "$SINGLETRAILER" == "true" ]; then
 					if [ "$themoviedbvidetype" == "Trailer" ]; then
-						if find "$radarrmoviepath/$folder" -name "*.mkv" | read; then
+						if find "$radarrmoviepath/$folder" -name "*$filename" | read; then
 							echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Trailer found, skipping..."
 							continue
 						fi
@@ -334,7 +345,7 @@ DownloadTrailers () {
 						fi
 					fi
 				fi
-				outputfile="$radarrmoviepath/$folder/$sanatizethemoviedbvidename.mkv"
+				outputfile="$radarrmoviepath/$folder/$sanatizethemoviedbvidename$filename"
 			else
 				if [[ -d "$radarrmoviepath/${folder}s" || -d "$radarrmoviepath/${folder}" ]]; then
 					if [ "$themoviedbvidetype" == "Behind the Scenes" ]; then
@@ -346,7 +357,7 @@ DownloadTrailers () {
 				folder="$(echo "${folder,,}" | sed 's/ *//g')"
 				if [ "$SINGLETRAILER" == "true" ]; then
 					if [ "$themoviedbvidetype" == "Trailer" ]; then
-						if find "$radarrmoviepath" -name "*-trailer.mkv" | read; then
+						if find "$radarrmoviepath" -name "*$filename" | read; then
 							echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $currentsubprocessid of $themoviedbvideoslistidscount :: $folder :: $themoviedbvidename :: Existing Trailer found, skipping..."
 							continue
 						fi
@@ -362,7 +373,7 @@ DownloadTrailers () {
 						fi
 					fi
 				fi
-				outputfile="$radarrmoviepath/$sanatizethemoviedbvidename-$folder.mkv"
+				outputfile="$radarrmoviepath/$sanatizethemoviedbvidename$filename"
 			fi			
 			
 			if [ -f "$outputfile" ]; then
@@ -480,7 +491,7 @@ DownloadTrailers () {
 		if [ "$USEFOLDERS" == "true" ]; then
 			trailercount="$(find "$radarrmoviepath" -mindepth 2 -type f -iname "*.mkv" | wc -l)"
 		else
-			trailercount="$(find "$radarrmoviepath" -mindepth 1 -type f -regex '.*\(-trailer.mkv\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\|-behindthescenes.mkv\)' | wc -l)"
+			trailercount="$(find "$radarrmoviepath" -mindepth 1 -type f -regex '.*\($filename\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\|-behindthescenes.mkv\)' | wc -l)"
 		fi
 		
 		echo "$currentprocessid of $radarrmovietotal :: $radarrmovietitle :: $trailercount Extras Downloaded!"
@@ -491,7 +502,7 @@ DownloadTrailers () {
 	if [ "$USEFOLDERS" == "true" ]; then
 		trailercount="$(find "$radarrmovierootpath" -mindepth 3 -type f -iname "*.mkv" | wc -l)"
 	else
-		trailercount="$(find "$radarrmovierootpath" -mindepth 2 -type f -regex '.*\(-trailer.mkv\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\|-behindthescenes.mkv\)' | wc -l)"
+		trailercount="$(find "$radarrmovierootpath" -mindepth 2 -type f -regex '.*\($filename\|-scene.mkv\|-short.mkv\|-featurette.mkv\|-other.mkv\|-behindthescenes.mkv\)' | wc -l)"
 	fi
 	echo "############################################ $trailercount TRAILERS DOWNLOADED"
 	echo "############################################ SCRIPT COMPLETE"
