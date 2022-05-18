@@ -61,6 +61,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e SINGLETRAILER=true` | true = enabled :: Only downloads the first available trailer, does not apply to other extras type |
 | `-e FilePermissions=644` | Based on chmod linux permissions |
 | `-e FolderPermissions=755` | Based on chmod linux permissions |
+| `-e FILENAME="-trailer.mkv"` | Change what's appended on to the filename |
 
 ### docker
 
